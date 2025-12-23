@@ -14,18 +14,18 @@ export default function SizeChart() {
         <tbody>
           <tr>
             <td className="border p-2">M</td>
-            <td className="border p-2">38"</td>
-            <td className="border p-2">27"</td>
+            <td className="border p-2">38&quot;</td>
+            <td className="border p-2">27&quot;</td>
           </tr>
           <tr>
             <td className="border p-2">L</td>
-            <td className="border p-2">40"</td>
-            <td className="border p-2">28"</td>
+            <td className="border p-2">40&quot;</td>
+            <td className="border p-2">28&quot;</td>
           </tr>
           <tr>
             <td className="border p-2">XL</td>
-            <td className="border p-2">42"</td>
-            <td className="border p-2">29"</td>
+            <td className="border p-2">42&quot;</td>
+            <td className="border p-2">29&quot;</td>
           </tr>
         </tbody>
       </table>

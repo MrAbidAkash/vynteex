@@ -8,6 +8,7 @@ import sharp from 'sharp'
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { ProductLanding } from './collections/ProductLanding'
+import { cloudinaryStorage } from 'payload-storage-cloudinary' // 🟢
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -29,5 +30,19 @@ export default buildConfig({
     url: process.env.DATABASE_URL || '',
   }),
   sharp,
-  plugins: [],
+  plugins: [
+    cloudinaryStorage({
+      // 👇 Your Cloudinary credentials
+      cloudConfig: {
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
+        api_key: process.env.CLOUDINARY_API_KEY!,
+        api_secret: process.env.CLOUDINARY_API_SECRET!,
+      },
+
+      // 👇 Enable Cloudinary storage for your Media collection
+      collections: {
+        media: true, // or { folder: 'your-folder-name' } to group uploads
+      },
+    }),
+  ],
 })

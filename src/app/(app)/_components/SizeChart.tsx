@@ -1,34 +1,50 @@
 export default function SizeChart() {
   return (
-    <section className="px-6 py-12">
-      <h3 className="text-xl font-serif text-center mb-6">Size Chart</h3>
+    <section className="px-6 py-12 max-w-[50rem]">
+      <div className="text-center">
+        <h3 className="text-5xl font-serif text-center mb-1">Size Chart</h3>
+        <p className="text-center mb-6 text-gray-600">
+          Find your perfect fit before placing the purchase
+        </p>
+      </div>
 
-      <table className="w-full text-sm border">
+      <div className="py-5">
+        <p className="text-center mb-6">
+          Our Classic Premium Turtleneck is designed with a regular fit. Please check the
+          measurements carefully. If you prefer a relaxed or loose fit, we recommend choosing one
+          size up.
+        </p>
+      </div>
+
+      <table className="w-[80%] text-md border mx-auto">
         <thead>
           <tr className="bg-gray-100">
-            <th className="border p-2">Size</th>
-            <th className="border p-2">Chest</th>
-            <th className="border p-2">Length</th>
+            <th className="border p-2 text-center">Size</th>
+            <th className="border p-2 text-center">Chest</th>
+            <th className="border p-2 text-center">Length</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td className="border p-2">M</td>
-            <td className="border p-2">38&quot;</td>
-            <td className="border p-2">27&quot;</td>
+            <td className="border p-2 text-center">M</td>
+            <td className="border p-2 text-center">38&quot;</td>
+            <td className="border p-2 text-center">27&quot;</td>
           </tr>
           <tr>
-            <td className="border p-2">L</td>
-            <td className="border p-2">40&quot;</td>
-            <td className="border p-2">28&quot;</td>
+            <td className="border p-2 text-center">L</td>
+            <td className="border p-2 text-center">40&quot;</td>
+            <td className="border p-2 text-center">28&quot;</td>
           </tr>
           <tr>
-            <td className="border p-2">XL</td>
-            <td className="border p-2">42&quot;</td>
-            <td className="border p-2">29&quot;</td>
+            <td className="border p-2 text-center">XL</td>
+            <td className="border p-2 text-center">42&quot;</td>
+            <td className="border p-2 text-center">29&quot;</td>
           </tr>
         </tbody>
       </table>
+      <div className="mt-10 text-gray-600 text-center">
+        <p>⚠️ Measurement tolerance ±0.5 inch due to manual measurement.</p>
+      </div>
     </section>
   )
 }

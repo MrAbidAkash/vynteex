@@ -1,6 +1,6 @@
 export default function LuxurySection() {
   return (
-    <section className="px-6 py-16 text-center max-w-[880px] mx-auto">
+    <section className="px-6 py-16 text-center max-w-[880px] mx-auto h-[80vh] flex flex-col justify-center items-center">
       <span className="inline-block bg-yellow-400 text-xl px-5 py-2 rounded-full mb-4">
         Crafted for Elegance
       </span>
@@ -14,13 +14,13 @@ export default function LuxurySection() {
       <div className="mt-5 flex flex-col gap-4">
         <p>
           Introducing the Classic Premium Turtleneck — a refined essential that defines luxury in
-          every thread. Elegance lives in the details.
+          every thread.
         </p>
 
         <p>
           {' '}
-          From premium fabric to flawless finishing, this turtleneck transforms ordinary moments
-          into iconic style.
+          Elegance lives in the details. From premium fabric to flawless finishing, this turtleneck
+          transforms ordinary moments into iconic style.
         </p>
 
         <p>

@@ -1,20 +1,20 @@
 export default function LuxurySection() {
   return (
-    <section className="px-6 py-16 text-center max-w-[880px] mx-auto h-[80vh] flex flex-col justify-center items-center">
-      <span className="inline-block bg-yellow-400 text-xl px-5 py-2 rounded-full mb-4">
+    <section className="px-6 py-20 pb-24 text-center max-w-[900px] mx-auto flex flex-col items-center">
+      <span className="inline-block bg-(--accent) text-md px-6 font-semibold py-2 rounded-full mb-4">
         Crafted for Elegance
       </span>
 
-      <h2 className="text-5xl font-serif mb-4">Luxury, Redefined</h2>
+      <h2 className="text-5xl font-serif mb-3">Luxury, Redefined</h2>
 
-      <p className="text-md text-gray-600 leading-relaxed">
+      <p className="text-md text-(--secondary) leading-relaxed">
         Luxury is not about being noticed — it’s about being remembered.
       </p>
 
-      <div className="mt-5 flex flex-col gap-4">
+      <div className="mt-5 flex flex-col gap-4 text-gray-600 text-base">
         <p>
-          Introducing the Classic Premium Turtleneck — a refined essential that defines luxury in
-          every thread.
+          Introducing the <strong>Classic Premium Turtleneck</strong> — a refined essential that
+          defines luxury in every thread.
         </p>
 
         <p>
@@ -23,7 +23,7 @@ export default function LuxurySection() {
           transforms ordinary moments into iconic style.
         </p>
 
-        <p>
+        <p className="font-semibold text-black text-sm">
           If you want to make every moment exclusive and look unforgettable — this is the right
           choice for you.
         </p>

@@ -1,13 +1,17 @@
-"use client"
+'use client'
 
-import Link from "next/link";
+import Link from 'next/link'
 
 // components/Header.tsx
 export default function Header() {
   return (
-    <header className="flex items-center justify-between px-6 py-4 bg-white sadow-sm  max-w-[82.5rem] mx-auto">
-      <h1 className="text-2xl font-semibold tracking-widest">CLASSIC PREMIUM</h1>
-      <button className="bg-black text-white px-4 py-2 rounded-full text-xl">Buy Now</button>
-    </header>
+    <div className="shadow-md sticky top-0 w-full z-99 bg-white">
+      <header className="flex items-center justify-between px-2.5 py-5  -sm  max-w-330 mx-auto">
+        <Link href="/" className="font-playfair text-[1.75rem] font-bold tracking-">
+          CLASSIC PREMIUM
+        </Link>
+        <button className="bg-black text-white px-8 py-3 rounded-full text-md">Buy Now</button>
+      </header>
+    </div>
   )
 }

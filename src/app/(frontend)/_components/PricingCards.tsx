@@ -1,6 +1,6 @@
 export default function PricingCards() {
   return (
-    <section className="grid grid-cols-3 justify-center gap-4 px-6 w-full">
+    <section className="grid grid-cols-3 justify-center gap-4 px-6 w-full mb-20">
       <PriceCard value="Single" title="Premium Turtleneck" price="৳1200" offerPrice="৳1000" />
       <PriceCard
         value="Best Value"
@@ -17,7 +17,7 @@ export default function PricingCards() {
 function PriceCard({
   value,
   title,
-    price,
+  price,
   offerPrice,
   highlight,
 }: {
@@ -30,12 +30,14 @@ function PriceCard({
   return (
     <div
       className={` p-4 rounded-xl text-center shadow-lg flex flex-col justify-center items-center w-full p-10 ${
-        highlight ? 'bg-[#b59a5a] text-white' : 'bg-white'
+        highlight
+          ? 'bg-[linear-gradient(135deg,var(--secondary),var(--accent))] text-white'
+          : 'bg-white'
       }`}
     >
-      <p className="text-xl font-semibold bg-amber-500 p-3 px-5 rounded-full mb-3">{value}</p>
-      <p className="text-2xl font-semibold">{title}</p>
-      <p className="text-lg font-bold mt-2">{price}</p>
+      <p className="text-md font-semibold bg-(--accent) p-3 px-5 rounded-full mb-3">{value}</p>
+      <p className="text-2xl font-normal font-playfair">{title}</p>
+      <p className="text-lg font-normal mt-2">{price}</p>
       <p className="text-4xl font-bold mt-2 linethrough">{offerPrice}</p>
     </div>
   )

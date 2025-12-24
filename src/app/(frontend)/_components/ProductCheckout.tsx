@@ -21,7 +21,7 @@ export default function ProductCheckout() {
   const total = variant.price + DELIVERY_CHARGE
 
   return (
-    <div className="w-[90%] mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10 px-6 border rounded-2xl shadow-lg overflow-hidden">
+    <div className="w-[95%] pb-10 bg-white mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10 px-6 borer rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.25)] overflow-hidden">
       {/* LEFT */}
       <div className="lg:col-span-2 space-y-10 py-3">
         {/* Variants */}

@@ -15,7 +15,7 @@ const LandingPage = ({ page }: { page: any }) => {
       <div className="bg-[#f8f6f3]">
         <div className="max-w-330 w-full flex flex-col justify-center items-center mx-auto">
           <HeroSlider page={page} />
-          <SpecialPricing />
+          <SpecialPricing page={page} />
           <PricingCards />
           <CTASection />
           {/* <Footer /> */}

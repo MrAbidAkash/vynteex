@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from 'react'
 
-export default function SpecialPricing() {
+export default function SpecialPricing({ page }: { page: any }) {
+  useEffect(() => {
+    console.log(page?.specialPricing)
+  }, [page])
+
   const [time, setTime] = useState({
     days: 2,
     hours: 23,

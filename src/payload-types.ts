@@ -192,6 +192,15 @@ export interface ProductLanding {
     ctaText?: string | null;
     ctaLink?: string | null;
   };
+  specialPricing?:
+    | {
+        label: string;
+        price: number;
+        description?: string | null;
+        discountPrice?: number | null;
+        id?: string | null;
+      }[]
+    | null;
   pricing?:
     | {
         label: string;
@@ -353,6 +362,15 @@ export interface ProductLandingSelect<T extends boolean = true> {
         mainImage?: T;
         ctaText?: T;
         ctaLink?: T;
+      };
+  specialPricing?:
+    | T
+    | {
+        label?: T;
+        price?: T;
+        description?: T;
+        discountPrice?: T;
+        id?: T;
       };
   pricing?:
     | T

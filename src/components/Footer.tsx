@@ -1,0 +1,17 @@
+'use client'
+
+// components/Header.tsx
+export default function Footer() {
+  return (
+    <div className=" bg-black ">
+      <footer className="flex flex-col max-sm:text-center  bg-black py-20 justify-center gap-2 items-center px-6  sadow-sm  md:max-w-[82.5rem] md:mx-auto">
+        <h1 className="md:text-3xl text-xl font-semibold text-white">
+          Ready to Elevate Your Style?
+        </h1>
+        <p className=" text-white px-4 rounded-full md:text-lg  text-sm">
+          © {new Date().getFullYear()} Classic Premium. All Rights Reserved.
+        </p>
+      </footer>
+    </div>
+  )
+}

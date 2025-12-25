@@ -194,10 +194,12 @@ export interface ProductLanding {
   };
   specialPricing?:
     | {
-        label: string;
+        value: string;
+        title: string;
         price: number;
         description?: string | null;
-        discountPrice?: number | null;
+        offerPrice?: number | null;
+        highlight?: boolean | null;
         id?: string | null;
       }[]
     | null;
@@ -366,10 +368,12 @@ export interface ProductLandingSelect<T extends boolean = true> {
   specialPricing?:
     | T
     | {
-        label?: T;
+        value?: T;
+        title?: T;
         price?: T;
         description?: T;
-        discountPrice?: T;
+        offerPrice?: T;
+        highlight?: T;
         id?: T;
       };
   pricing?:

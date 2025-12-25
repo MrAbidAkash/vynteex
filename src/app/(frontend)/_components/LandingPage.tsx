@@ -15,8 +15,8 @@ const LandingPage = ({ page }: { page: any }) => {
       <div className="bg-[#f8f6f3]">
         <div className="max-w-330 w-full flex flex-col justify-center items-center mx-auto">
           <HeroSlider page={page} />
-          <SpecialPricing page={page} />
-          <PricingCards />
+          <SpecialPricing />
+          <PricingCards page={page} />
           <CTASection />
           {/* <Footer /> */}
         </div>
@@ -47,7 +47,7 @@ const LandingPage = ({ page }: { page: any }) => {
         <div className="max-w-330 w-full flex flex-col justify-center items-center mx-auto">
           <ParcelInfo />
           <div className="px-5 pb-20">
-            <ProductCheckout />{' '}
+            <ProductCheckout page={page} />{' '}
           </div>
         </div>
       </div>

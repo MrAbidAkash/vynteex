@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
 import { useState } from 'react'
@@ -14,7 +15,10 @@ const variants = [
 const sizes = ['S', 'M', 'L', 'XL', 'XXL']
 const DELIVERY_CHARGE = 50
 
-export default function ProductCheckout() {
+export default function ProductCheckout({ page }: { page: any }) {
+  const data = page?.pricing
+
+  console.log(data)
   const [variant, setVariant] = useState(variants[0])
   const [payment, setPayment] = useState<'partial' | 'full'>('partial')
 
@@ -28,7 +32,7 @@ export default function ProductCheckout() {
         <section>
           <h2 className="text-3xl font-semibold mb-4 pt-5.5">Select Your Product</h2>
           <div className="space-y-3">
-            {variants.map((v) => (
+            {data.map((v: any) => (
               <label key={v.id} className="flex items-center gap-3 cursor-pointer">
                 <input
                   type="radio"

@@ -50,10 +50,12 @@ export const ProductLanding: CollectionConfig = {
       minRows: 1,
       maxRows: 3,
       fields: [
-        { name: 'label', type: 'text', required: true },
+        { name: 'value', type: 'text', required: true },
+        { name: 'title', type: 'text', required: true },
         { name: 'price', type: 'number', required: true },
         { name: 'description', type: 'text' }, // Optional: for "Most Popular" tag
-        { name: 'discountPrice', type: 'number' }, // Optional: "Save ₹500"
+        { name: 'offerPrice', type: 'number' }, // Optional: "Save ₹500"
+        { name: 'highlight', type: 'checkbox' }, // Optional: "Save ₹500"
       ],
     },
     // Pricing Combos

@@ -1,7 +1,22 @@
-export default function PricingCards() {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+export default function PricingCards({ page }: { page: any }) {
+  const specialPricing = page?.specialPricing
+
+  console.log(specialPricing)
   return (
     <section className="grid grid-cols-3 max-sm:grid-cols-1 justify-center gap-4 max-sm:gap-5 px-6 w-full mb-20">
-      <PriceCard value="Single" title="Premium Turtleneck" price="৳1200" offerPrice="৳1000" />
+      {specialPricing.map((item: any) => (
+        <PriceCard
+          key={item.id}
+          value={item.value}
+          title={item.title}
+          price={`৳${item.price}`}
+          offerPrice={`৳${item.offerPrice}`}
+          highlight={item.highlight || false} // optional logic for highlight
+        />
+      ))}
+      {/* <PriceCard value="Single" title="Premium Turtleneck" price="৳1200" offerPrice="৳1000" />
       <PriceCard
         value="Best Value"
         title="2 Piece Combo"
@@ -9,7 +24,7 @@ export default function PricingCards() {
         offerPrice="৳1800"
         highlight
       />
-      <PriceCard value="Combo 3" title="Combo 3" price="৳2500" offerPrice="৳2200" />
+      <PriceCard value="Combo 3" title="Combo 3" price="৳2500" offerPrice="৳2200" /> */}
     </section>
   )
 }

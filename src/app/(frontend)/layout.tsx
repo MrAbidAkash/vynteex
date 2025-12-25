@@ -7,7 +7,7 @@ import { Playfair_Display } from 'next/font/google'
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
-  weight: ['400','700', '900'],
+  weight: ['400', '700', '900'],
   variable: '--font-playfair',
 })
 
@@ -19,9 +19,9 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={playfair.variable}>
-      <body>
+      <body className="overflow-x-hidden">
         <Header />
-        <main>{children}</main>
+        <main className='overflow-x-hidden'>{children}</main>
         <Footer />
       </body>
     </html>

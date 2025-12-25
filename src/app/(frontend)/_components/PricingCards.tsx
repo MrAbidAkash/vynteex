@@ -1,6 +1,6 @@
 export default function PricingCards() {
   return (
-    <section className="grid grid-cols-3 justify-center gap-4 px-6 w-full mb-20">
+    <section className="grid grid-cols-3 max-sm:grid-cols-1 justify-center gap-4 max-sm:gap-5 px-6 w-full mb-20">
       <PriceCard value="Single" title="Premium Turtleneck" price="৳1200" offerPrice="৳1000" />
       <PriceCard
         value="Best Value"

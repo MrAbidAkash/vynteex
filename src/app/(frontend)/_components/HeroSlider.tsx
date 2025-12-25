@@ -26,7 +26,7 @@ export default function HeroSlider({ page }: { page: any }) {
   }, [images.length])
 
   return (
-    <section className="flex justify-center py-12 mb-14 w-full">
+    <section className="flex justify-center md:py-12 mb-20 md:mb-14 w-full max-md:px-2">
       <div className="relative w-[600px] h-[600px] rounded-xl overflow-hidden shadow-lg mt-8">
         <div
           className="flex transition-transform duration-700 ease-in-out h-full"

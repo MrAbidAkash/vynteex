@@ -1,11 +1,11 @@
 export default function Features() {
   return (
-    <section className="px-6 py-12  max-w-150 flex flex-col justify-center items-center gap-7">
+    <section className="md:px-6 md:py-12  md:max-w-150 flex flex-col justify-center items-center gap-7">
       <div className="text-center">
         <h3 className="text-5xl font-playfair font-semibold mb-3">Premium Features</h3>
         <p className="text-md text-(--secondary) mb-6">Built for Comfort & Style</p>
       </div>
-      <div className="w-130">
+      <div className="md:w-130">
         <ul className="text-base textgray-600 space-y-5 mx-auto">
           <li>
             <span className="text-(--accent) mr-2">✔</span> 2/2 Honeycomb Rib Fabric

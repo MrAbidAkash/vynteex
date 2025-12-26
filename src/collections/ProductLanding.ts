@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // collections/ProductLanding.ts
 import { CollectionConfig } from 'payload'
 
@@ -64,11 +65,40 @@ export const ProductLanding: CollectionConfig = {
       type: 'array',
       minRows: 1,
       fields: [
+        {
+          name: 'pricingId',
+          type: 'text',
+          required: true,
+          admin: {
+            description: 'Internal pricing identifier (e.g. combo_1, combo_2)',
+          },
+        },
         { name: 'label', type: 'text', required: true },
         { name: 'price', type: 'number', required: true },
         { name: 'description', type: 'text' }, // Optional: for "Most Popular" tag
         { name: 'saving', type: 'text' }, // Optional: "Save ₹500"
+        {
+          name: 'sizes',
+          type: 'array',
+          minRows: 1,
+          required: true,
+          fields: [{ name: 'size', type: 'select', options: ['S', 'M', 'L', 'XL', 'XXL'] }],
+        },
       ],
+      hooks: {
+        beforeChange: [
+          ({ value }) => {
+            const ids = value?.map((v: any) => v.pricingId)
+            const duplicates = ids?.filter((id: string, i: number) => ids.indexOf(id) !== i)
+
+            if (duplicates?.length) {
+              throw new Error(`Duplicate pricingId found: ${duplicates.join(', ')}`)
+            }
+
+            return value
+          },
+        ],
+      },
     },
 
     // Countdown Offer

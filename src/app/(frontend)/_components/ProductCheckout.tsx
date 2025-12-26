@@ -3,26 +3,70 @@
 
 import { useState } from 'react'
 
-const variants = [
-  { id: 'turtleneck_black_single', label: 'Black – Single', price: 1200 },
-  { id: 'turtleneck_white_single', label: 'Black – Combo 2', price: 2000 },
-  { id: 'turtleneck_black_combo_3', label: 'Black – Combo 3', price: 2500 },
-  { id: 'turtleneck_white_single', label: 'White – Single', price: 1200 },
-  { id: 'turtleneck_white_combo_2', label: 'White – Combo 2', price: 2000 },
-  { id: 'turtleneck_white_combo_3', label: 'White – Combo 3', price: 2500 },
-]
+// const variants = [
+//   { id: 'turtleneck_black_single', label: 'Black – Single', price: 1200 },
+//   { id: 'turtleneck_white_single', label: 'Black – Combo 2', price: 2000 },
+//   { id: 'turtleneck_black_combo_3', label: 'Black – Combo 3', price: 2500 },
+//   { id: 'turtleneck_white_single', label: 'White – Single', price: 1200 },
+//   { id: 'turtleneck_white_combo_2', label: 'White – Combo 2', price: 2000 },
+//   { id: 'turtleneck_white_combo_3', label: 'White – Combo 3', price: 2500 },
+// ]
 
 const sizes = ['S', 'M', 'L', 'XL', 'XXL']
-const DELIVERY_CHARGE = 50
 
 export default function ProductCheckout({ page }: { page: any }) {
   const data = page?.pricing
 
   console.log(data)
-  const [variant, setVariant] = useState(variants[0])
-  const [payment, setPayment] = useState<'partial' | 'full'>('partial')
 
-  const total = variant.price + DELIVERY_CHARGE
+  const [variant, setVariant] = useState(data[0])
+  console.log(variant)
+  const [payment, setPayment] = useState<'partial' | 'full'>('partial')
+  const DELIVERY_CHARGE = 50
+  const total = payment === 'full' ? variant.price + DELIVERY_CHARGE : DELIVERY_CHARGE
+  const [loading, setLoading] = useState(false)
+
+  // Replace with your actual backend base URL
+  // const baseUriBackend = 'https://your-backend-domain.com'
+
+  // Fetch auth token from cookies or your auth state
+  // Just example, replace with your real auth token retrieval
+  const token = 'user-auth-token'
+
+  const handlePurchase = async () => {
+    setLoading(true)
+
+    try {
+      const response = await fetch(`/api/bkash/create`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: token, // your auth token if needed
+        },
+        body: JSON.stringify({
+          amount: total,
+          callbackURL: `/api/bkash/callback`,
+          payerReference: payment === 'full' ? 'full' : 'partial',
+          pricingId: variant.pricingId,
+          size: variant.size,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (data.success && data.data?.bkashURL) {
+        // Redirect to bKash payment gateway
+        window.location.href = data.data.bkashURL
+      } else {
+        alert('Failed to initiate bKash payment: ' + JSON.stringify(data.error || data))
+      }
+    } catch (error) {
+      console.error('Error initiating bKash payment:', error)
+      alert('Something went wrong while processing payment.')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <div className="w-[95%] pb-10 bg-white mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10 px-6 borer rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.25)] overflow-hidden">
@@ -50,9 +94,15 @@ export default function ProductCheckout({ page }: { page: any }) {
         {/* Sizes */}
         <section>
           <h2 className="text-xl font-semibold mb-3">Select Size</h2>
-          <select className="w-full border rounded p-3 h40">
-            {sizes.map((s) => (
-              <option key={s}>{s}</option>
+          <select
+            value={variant.size || variant.sizes?.[0].size}
+            onChange={(e) => setVariant({ ...variant, size: e.target.value })}
+            className="w-full border rounded p-3 h40"
+          >
+            {variant.sizes?.map((s: any) => (
+              <option key={s.size} value={s.size}>
+                {s.size}
+              </option>
             ))}
           </select>
           <p className="text-sm text-gray-500 mt-1">
@@ -148,8 +198,12 @@ export default function ProductCheckout({ page }: { page: any }) {
             </div>
           </div>
 
-          <button className="w-full bg-black text-white py-3 rounded text-lg">
-            Place Purchase — ৳{total}
+          <button
+            onClick={handlePurchase}
+            disabled={loading}
+            className="w-full bg-black text-white py-3 rounded text-lg"
+          >
+            {loading ? 'Processing...' : `Place Purchase — ৳${total}`}
           </button>
         </aside>
       </div>

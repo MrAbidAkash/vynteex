@@ -9,6 +9,9 @@ import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { ProductLanding } from './collections/ProductLanding'
 import { cloudinaryStorage } from 'payload-storage-cloudinary' // 🟢
+import BkashTokens from './collections/BkashTokens'
+import BkashPayments from './collections/BkashPayments'
+import { createPayment, executePayment } from './endpoints/bkash'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -20,7 +23,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, ProductLanding],
+  collections: [Users, Media, ProductLanding, BkashTokens, BkashPayments],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
@@ -30,6 +33,7 @@ export default buildConfig({
     url: process.env.DATABASE_URL || '',
   }),
   sharp,
+  endpoints: [createPayment, executePayment],
   plugins: [
     cloudinaryStorage({
       // 👇 Your Cloudinary credentials
@@ -42,6 +46,8 @@ export default buildConfig({
       // 👇 Enable Cloudinary storage for your Media collection
       collections: {
         media: true, // or { folder: 'your-folder-name' } to group uploads
+        BkashPayments: true,
+        BkashTokens: true,
       },
     }),
   ],

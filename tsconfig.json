@@ -37,7 +37,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts"
-  ],
+, "src/lib/bkash.ts", "src/endpoints/bkash.ts"  ],
   "exclude": [
     "node_modules"
   ],

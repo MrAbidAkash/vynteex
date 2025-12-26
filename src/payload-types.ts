@@ -70,6 +70,8 @@ export interface Config {
     users: User;
     media: Media;
     'product-landing': ProductLanding;
+    'bkash-tokens': BkashToken;
+    'bkash-payments': BkashPayment;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -80,6 +82,8 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     'product-landing': ProductLandingSelect<false> | ProductLandingSelect<true>;
+    'bkash-tokens': BkashTokensSelect<false> | BkashTokensSelect<true>;
+    'bkash-payments': BkashPaymentsSelect<false> | BkashPaymentsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -205,10 +209,18 @@ export interface ProductLanding {
     | null;
   pricing?:
     | {
+        /**
+         * Internal pricing identifier (e.g. combo_1, combo_2)
+         */
+        pricingId: string;
         label: string;
         price: number;
         description?: string | null;
         saving?: string | null;
+        sizes: {
+          size?: ('S' | 'M' | 'L' | 'XL' | 'XXL') | null;
+          id?: string | null;
+        }[];
         id?: string | null;
       }[]
     | null;
@@ -221,6 +233,39 @@ export interface ProductLanding {
       }[]
     | null;
   footer?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bkash-tokens".
+ */
+export interface BkashToken {
+  id: string;
+  accessToken: string;
+  expiresIn: number;
+  createdAt: string;
+  updatedAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bkash-payments".
+ */
+export interface BkashPayment {
+  id: string;
+  paymentID: string;
+  product: string | ProductLanding;
+  /**
+   * pricing.pricingId from ProductLanding
+   */
+  pricingId: string;
+  amount?: number | null;
+  currency?: string | null;
+  merchantInvoiceNo?: string | null;
+  payerReference?: string | null;
+  trxID?: string | null;
+  transactionStatus?: ('Pending' | 'Completed' | 'Failed' | 'Error') | null;
+  user?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -259,6 +304,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'product-landing';
         value: string | ProductLanding;
+      } | null)
+    | ({
+        relationTo: 'bkash-tokens';
+        value: string | BkashToken;
+      } | null)
+    | ({
+        relationTo: 'bkash-payments';
+        value: string | BkashPayment;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -379,10 +432,17 @@ export interface ProductLandingSelect<T extends boolean = true> {
   pricing?:
     | T
     | {
+        pricingId?: T;
         label?: T;
         price?: T;
         description?: T;
         saving?: T;
+        sizes?:
+          | T
+          | {
+              size?: T;
+              id?: T;
+            };
         id?: T;
       };
   offerEnd?: T;
@@ -394,6 +454,34 @@ export interface ProductLandingSelect<T extends boolean = true> {
         id?: T;
       };
   footer?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bkash-tokens_select".
+ */
+export interface BkashTokensSelect<T extends boolean = true> {
+  accessToken?: T;
+  expiresIn?: T;
+  createdAt?: T;
+  updatedAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bkash-payments_select".
+ */
+export interface BkashPaymentsSelect<T extends boolean = true> {
+  paymentID?: T;
+  product?: T;
+  pricingId?: T;
+  amount?: T;
+  currency?: T;
+  merchantInvoiceNo?: T;
+  payerReference?: T;
+  trxID?: T;
+  transactionStatus?: T;
+  user?: T;
   updatedAt?: T;
   createdAt?: T;
 }

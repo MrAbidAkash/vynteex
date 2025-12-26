@@ -78,6 +78,8 @@ export const executePayment: Endpoint = {
     const { paymentID } = req.body
     const idToken = await grantToken()
 
+    const payload = await getPayload()
+
     const resp = await fetch(
       'https://tokenized.pay.bka.sh/v1.2.0-beta/tokenized/checkout/execute',
       {

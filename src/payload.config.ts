@@ -11,7 +11,7 @@ import { ProductLanding } from './collections/ProductLanding'
 import { cloudinaryStorage } from 'payload-storage-cloudinary' // 🟢
 import BkashTokens from './collections/BkashTokens'
 import BkashPayments from './collections/BkashPayments'
-import { createPayment, executePayment } from './endpoints/bkash'
+import { bkashCallback, createPayment } from './endpoints/bkash'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -33,7 +33,7 @@ export default buildConfig({
     url: process.env.DATABASE_URL || '',
   }),
   sharp,
-  endpoints: [createPayment, executePayment],
+  endpoints: [createPayment, bkashCallback],
   plugins: [
     cloudinaryStorage({
       // 👇 Your Cloudinary credentials

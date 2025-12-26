@@ -5,6 +5,47 @@ const BASE_URL = SANDBOX
   ? 'https://tokenized.sandbox.bka.sh/v1.2.0-beta'
   : 'https://tokenized.pay.bka.sh/v1.2.0-beta'
 
+// ✅ Helper function to refresh token
+// export async function refreshToken(refresh_token: string) {
+//   console.log('♻️ Refreshing bKash token...')
+//   const url = `${BASE_URL}/tokenized/checkout/token/refresh`
+
+//   const resp = await fetch(url, {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json',
+//       Accept: 'application/json',
+//       username: BK_USERNAME,
+//       password: BK_PASSWORD,
+//       'x-app-key': BK_APP_KEY,
+//     },
+//     body: JSON.stringify({
+//       app_key: BK_APP_KEY,
+//       app_secret: BK_APP_SECRET,
+//       refresh_token,
+//     }),
+//   })
+
+//   const data = await resp.json()
+
+//   if (!resp.ok || !data.id_token) {
+//     console.error('❌ Refresh token failed:', data)
+//     throw new Error('Refresh token failed')
+//   }
+
+//   const expiresAt = new Date(Date.now() + (data.expires_in - 60) * 1000)
+
+//   await BkashToken.deleteMany() // keep one token only
+//   await BkashToken.create({
+//     id_token: data.id_token,
+//     refresh_token: data.refresh_token || refresh_token, // keep old refresh if not returned
+//     expiresAt,
+//   })
+
+//   console.log('✅ Token refreshed successfully, expires at', expiresAt)
+//   return data.id_token
+// }
+
 export async function grantToken() {
   console.log('bkash:grant:start')
 
@@ -41,7 +82,6 @@ export async function grantToken() {
   })
 
   const data = await resp.json()
-
 
   if (!data.id_token || !data.refresh_token) {
     console.error('bKash token error:', data)

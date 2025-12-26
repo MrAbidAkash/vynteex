@@ -3,6 +3,8 @@ import type { Endpoint } from 'payload'
 import { grantToken } from '../lib/bkash'
 import { getPayload } from '@/lib/payload'
 
+const BASE_URL = 'https://tokenized.pay.bka.sh/v1.2.0-beta'
+
 export const createPayment: Endpoint = {
   path: '/bkash/create',
   method: 'post',
@@ -71,39 +73,146 @@ export const createPayment: Endpoint = {
   },
 }
 
-export const executePayment: Endpoint = {
-  path: '/bkash/execute',
-  method: 'post',
-  handler: async (req: any) => {
-    const { paymentID } = req.body
-    const idToken = await grantToken()
+// export const executePayment: Endpoint = {
+//   path: '/bkash/execute',
+//   method: 'post',
+//   handler: async (req: any) => {
+//     const { paymentID } = req.body
+//     const idToken = await grantToken()
 
+//     const payload = await getPayload()
+
+//     const resp = await fetch(
+//       'https://tokenized.pay.bka.sh/v1.2.0-beta/tokenized/checkout/execute',
+//       {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//           Authorization: idToken,
+//           'x-app-key': process.env.BK_APP_KEY!,
+//         },
+//         body: JSON.stringify({ paymentID }),
+//       },
+//     )
+
+//     const data = await resp.json()
+
+//     await payload.update({
+//       collection: 'bkash-payments',
+//       where: { paymentID: { equals: paymentID } },
+//       data: {
+//         transactionStatus: data.transactionStatus,
+//         trxID: data.trxID,
+//       },
+//     })
+
+//     return Response.json(data)
+//   },
+// }
+
+export const bkashCallback: Endpoint = {
+  path: '/bkash/callback',
+  method: 'get',
+  handler: async (req: any) => {
     const payload = await getPayload()
 
-    const resp = await fetch(
-      'https://tokenized.pay.bka.sh/v1.2.0-beta/tokenized/checkout/execute',
-      {
+    const url = new URL(req.url)
+
+    console.log('FULL URL:', url.toString())
+    console.log('SEARCH PARAMS:', url.searchParams.toString())
+
+    const paymentID = url.searchParams.get('paymentID')
+    const status = url.searchParams.get('status')
+    const signature = url.searchParams.get('signature')
+    const apiVersion = url.searchParams.get('apiVersion')
+
+    console.log({
+      paymentID,
+      status,
+      signature,
+      apiVersion,
+    })
+
+    if (!paymentID || status !== 'success') {
+      return Response.redirect(
+        `${process.env.NEXT_PUBLIC_FRONTEND_URL}/payment-fail?reason=${status}`,
+      )
+    }
+
+    try {
+      const idToken = await grantToken()
+
+      // ✅ Execute payment
+      const resp = await fetch(`${BASE_URL}/tokenized/checkout/execute`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Accept: 'application/json',
           Authorization: idToken,
           'x-app-key': process.env.BK_APP_KEY!,
         },
         body: JSON.stringify({ paymentID }),
-      },
-    )
+      })
 
-    const data = await resp.json()
+      const data = await resp.json()
+      console.log('bKash execute response:', data)
 
-    await payload.update({
-      collection: 'bkash-payments',
-      where: { paymentID: { equals: paymentID } },
-      data: {
-        transactionStatus: data.transactionStatus,
-        trxID: data.trxID,
-      },
-    })
+      // =============================
+      // ✅ PAYMENT SUCCESS
+      // =============================
+      if (data.transactionStatus === 'Completed') {
+        await payload.update({
+          collection: 'bkash-payments',
+          where: { paymentID: { equals: paymentID } },
+          data: {
+            amount: parseFloat(data.amount) || 0,
+            currency: data.currency || 'BDT',
+            merchantInvoiceNo: data.merchantInvoiceNumber,
+            payerReference: data.payerReference || 'anonymous',
+            transactionStatus: 'Completed',
+            trxID: data.trxID,
+            user: data.customerMsisdn || '',
+          },
+        })
 
-    return Response.json(data)
+        return Response.redirect(
+          `${process.env.NEXT_PUBLIC_FRONTEND_URL}/payment-success?paymentID=${paymentID}`,
+        )
+      }
+
+      // =============================
+      // ❌ PAYMENT FAILED
+      // =============================
+      await payload.update({
+        collection: 'bkash-payments',
+        where: { paymentID: { equals: paymentID } },
+        data: {
+          transactionStatus: data.transactionStatus || 'Failed',
+          amount: parseFloat(data.amount) || 0,
+          currency: data.currency || 'BDT',
+          merchantInvoiceNo: data.merchantInvoiceNumber,
+          payerReference: data.payerReference || '',
+        },
+      })
+
+      return Response.redirect(
+        `${process.env.NEXT_PUBLIC_FRONTEND_URL}/payment-fail?paymentID=${paymentID}`,
+      )
+    } catch (error) {
+      console.error('bKash callback error:', error)
+
+      await payload.update({
+        collection: 'bkash-payments',
+        where: { paymentID: { equals: paymentID } },
+        data: {
+          transactionStatus: 'Error',
+          // payerReference: searchParams.get('payerReference') || '',
+        },
+      })
+
+      return Response.redirect(
+        `${process.env.NEXT_PUBLIC_FRONTEND_URL}/payment-fail?reason=server_error`,
+      )
+    }
   },
 }

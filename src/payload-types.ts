@@ -243,6 +243,7 @@ export interface ProductLanding {
 export interface BkashToken {
   id: string;
   accessToken: string;
+  refreshToken: string;
   expiresIn: number;
   createdAt: string;
   updatedAt: string;
@@ -264,7 +265,7 @@ export interface BkashPayment {
   merchantInvoiceNo?: string | null;
   payerReference?: string | null;
   trxID?: string | null;
-  transactionStatus?: ('Pending' | 'Completed' | 'Failed' | 'Error') | null;
+  transactionStatus?: ('Initiated' | 'Pending' | 'Completed' | 'Failed' | 'Error') | null;
   user?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -463,6 +464,7 @@ export interface ProductLandingSelect<T extends boolean = true> {
  */
 export interface BkashTokensSelect<T extends boolean = true> {
   accessToken?: T;
+  refreshToken?: T;
   expiresIn?: T;
   createdAt?: T;
   updatedAt?: T;

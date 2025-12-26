@@ -18,6 +18,11 @@ const BkashTokens: CollectionConfig = {
       required: true,
     },
     {
+      name: 'refreshToken',
+      type: 'text',
+      required: true,
+    },
+    {
       name: 'expiresIn',
       type: 'number',
       required: true,

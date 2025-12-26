@@ -41,7 +41,7 @@ const BkashPayments: CollectionConfig = {
     {
       name: 'transactionStatus',
       type: 'select',
-      options: ['Pending', 'Completed', 'Failed', 'Error'],
+      options: ['Initiated', 'Pending', 'Completed', 'Failed', 'Error'],
       defaultValue: 'Pending',
     },
     {

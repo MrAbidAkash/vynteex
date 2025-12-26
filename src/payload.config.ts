@@ -46,8 +46,8 @@ export default buildConfig({
       // 👇 Enable Cloudinary storage for your Media collection
       collections: {
         media: true, // or { folder: 'your-folder-name' } to group uploads
-        BkashPayments: true,
-        BkashTokens: true,
+        // BkashPayments: true,
+        // BkashTokens: true,
       },
     }),
   ],

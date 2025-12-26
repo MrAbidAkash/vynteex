@@ -12,7 +12,7 @@ import { useState } from 'react'
 //   { id: 'turtleneck_white_combo_3', label: 'White – Combo 3', price: 2500 },
 // ]
 
-const sizes = ['S', 'M', 'L', 'XL', 'XXL']
+// const sizes = ['S', 'M', 'L', 'XL', 'XXL']
 
 export default function ProductCheckout({ page }: { page: any }) {
   const data = page?.pricing
@@ -22,7 +22,7 @@ export default function ProductCheckout({ page }: { page: any }) {
   const [variant, setVariant] = useState(data[0])
   console.log(variant)
   const [payment, setPayment] = useState<'partial' | 'full'>('partial')
-  const DELIVERY_CHARGE = 50
+  const DELIVERY_CHARGE = 1
   const total = payment === 'full' ? variant.price + DELIVERY_CHARGE : DELIVERY_CHARGE
   const [loading, setLoading] = useState(false)
 
@@ -45,7 +45,7 @@ export default function ProductCheckout({ page }: { page: any }) {
         },
         body: JSON.stringify({
           amount: total,
-          callbackURL: `/api/bkash/callback`,
+          callbackURL: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/bkash/callback`,
           payerReference: payment === 'full' ? 'full' : 'partial',
           pricingId: variant.pricingId,
           size: variant.size,
@@ -54,9 +54,11 @@ export default function ProductCheckout({ page }: { page: any }) {
 
       const data = await response.json()
 
-      if (data.success && data.data?.bkashURL) {
+      console.log('ddtdt', data)
+
+      if (data?.statusMessage === 'Successful' && data?.bkashURL) {
         // Redirect to bKash payment gateway
-        window.location.href = data.data.bkashURL
+        window.location.href = data.bkashURL
       } else {
         alert('Failed to initiate bKash payment: ' + JSON.stringify(data.error || data))
       }

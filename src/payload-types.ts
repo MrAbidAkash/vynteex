@@ -246,7 +246,7 @@ export interface BkashToken {
   id: string;
   accessToken: string;
   refreshToken: string;
-  expiresIn: number;
+  expiresIn: number | Date;
   createdAt: string;
   updatedAt: string;
 }

@@ -32,6 +32,12 @@ export default function ProductCheckout({ page }: { page: any }) {
     phone: '',
   })
 
+  const [errors, setErrors] = useState<{
+    name?: string
+    address?: string
+    phone?: string
+  }>({})
+
   // Replace with your actual backend base URL
   // const baseUriBackend = 'https://your-backend-domain.com'
 
@@ -39,21 +45,43 @@ export default function ProductCheckout({ page }: { page: any }) {
   // Just example, replace with your real auth token retrieval
   const token = 'user-auth-token'
 
+  const validateField = (field: 'name' | 'address' | 'phone', value: string) => {
+    switch (field) {
+      case 'name':
+        if (!value.trim()) return 'Name is required'
+        return undefined
+
+      case 'address':
+        if (!value.trim()) return 'Address is required'
+        return undefined
+
+      case 'phone':
+        if (!value.trim()) return 'Mobile number is required'
+        if (!/^01\d{9}$/.test(value)) return 'Enter a valid 11-digit Bangladeshi number'
+        return undefined
+
+      default:
+        return undefined
+    }
+  }
+
   const handlePurchase = async () => {
     setLoading(true)
 
     try {
-      if (!customerInfo.name || !customerInfo.address || !customerInfo.phone) {
-        alert('Please fill all delivery information')
+      const newErrors = {
+        name: validateField('name', customerInfo.name),
+        address: validateField('address', customerInfo.address),
+        phone: validateField('phone', customerInfo.phone),
+      }
+
+      if (newErrors.name || newErrors.address || newErrors.phone) {
+        setErrors(newErrors)
         setLoading(false)
         return
       }
 
-      if (!/^01\d{9}$/.test(customerInfo.phone)) {
-        alert('Please enter a valid Bangladeshi mobile number')
-        setLoading(false)
-        return
-      }
+      setErrors({})
 
       const response = await fetch(`/api/bkash/create`, {
         method: 'POST',
@@ -91,7 +119,6 @@ export default function ProductCheckout({ page }: { page: any }) {
 
   const isFormValid =
     customerInfo.name && customerInfo.address && /^01\d{9}$/.test(customerInfo.phone)
-
 
   return (
     <div className="w-[95%] pb-10 bg-white mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10 px-6 borer rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.25)] overflow-hidden">
@@ -143,33 +170,52 @@ export default function ProductCheckout({ page }: { page: any }) {
           </label>
           <input
             id="name"
-            className="w-full border rounded p-3 mt-2"
+            className={`w-full border rounded p-3 mt-2 ${errors.name ? 'border-red-500' : ''}`}
             placeholder="Enter Your Full Name"
             value={customerInfo.name}
-            onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
+            onChange={(e) => {
+              const value = e.target.value
+              setCustomerInfo({ ...customerInfo, name: value })
+              setErrors({ ...errors, name: validateField('name', value) })
+            }}
           />
+
+          {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+
           <label className="font-semibold" htmlFor="address">
             Delivery Address
           </label>
 
           <input
             id="address"
-            className="w-full border rounded p-3 mt-2"
+            className={`w-full border rounded p-3 mt-2 ${errors.address ? 'border-red-500' : ''}`}
             placeholder="House, Road, Area, District"
             value={customerInfo.address}
-            onChange={(e) => setCustomerInfo({ ...customerInfo, address: e.target.value })}
+            onChange={(e) => {
+              const value = e.target.value
+              setCustomerInfo({ ...customerInfo, address: value })
+              setErrors({ ...errors, address: validateField('address', value) })
+            }}
           />
+
+          {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address}</p>}
 
           <label className="font-semibold" htmlFor="mobile">
             Mobile Number
           </label>
           <input
             id="mobile"
-            className="w-full border rounded p-3 mt-2"
-            placeholder="Enter 11-digit Mobile Number"
+            className={`w-full border rounded p-3 mt-2 ${errors.phone ? 'border-red-500' : ''}`}
+            placeholder="01XXXXXXXXX"
             value={customerInfo.phone}
-            onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
+            onChange={(e) => {
+              const value = e.target.value
+              setCustomerInfo({ ...customerInfo, phone: value })
+              setErrors({ ...errors, phone: validateField('phone', value) })
+            }}
           />
+
+          {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
         </section>
       </div>
 

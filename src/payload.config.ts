@@ -49,6 +49,7 @@ export default buildConfig({
         media: true, // or { folder: 'your-folder-name' } to group uploads
         // BkashPayments: true,
         // BkashTokens: true,
+        caches: false,
       },
     }),
   ],

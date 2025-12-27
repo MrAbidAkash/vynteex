@@ -13,11 +13,11 @@ export const createPayment: Endpoint = {
 
     // console.log('body:', await req.json())
 
-    const payload = await getPayload()
-
     const payloadData = await req.json()
 
-    const { amount, callbackURL, payerReference, pricingId } = payloadData
+    const payload = await getPayload()
+
+    const { amount, callbackURL, payerReference, pricingId, size, customerInfo } = payloadData
 
     console.log('hi_2 :', payloadData)
 
@@ -64,6 +64,8 @@ export const createPayment: Endpoint = {
         amount: data.amount,
         transactionStatus: data.transactionStatus || 'Pending',
         pricingId,
+        size,
+        customerInfo,
       },
     })
 
@@ -168,7 +170,7 @@ export const bkashCallback: Endpoint = {
             amount: parseFloat(data.amount) || 0,
             currency: data.currency || 'BDT',
             merchantInvoiceNo: data.merchantInvoiceNumber,
-            payerReference: data.payerReference || 'anonymous',
+            // payerReference: data.payerReference || 'anonymous',
             transactionStatus: 'Completed',
             trxID: data.trxID,
             user: data.customerMsisdn || '',

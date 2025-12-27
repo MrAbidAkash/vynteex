@@ -33,6 +33,7 @@ const BkashPayments: CollectionConfig = {
         description: 'pricing.pricingId from ProductLanding',
       },
     },
+    { name: 'size', type: 'text' },
     { name: 'amount', type: 'number' },
     { name: 'currency', type: 'text', defaultValue: 'BDT' },
     { name: 'merchantInvoiceNo', type: 'text' },
@@ -47,6 +48,10 @@ const BkashPayments: CollectionConfig = {
     {
       name: 'user',
       type: 'text',
+    },
+    {
+      name: 'customerInfo',
+      type: 'json',
     },
   ],
 }

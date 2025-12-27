@@ -26,6 +26,12 @@ export default function ProductCheckout({ page }: { page: any }) {
   const total = payment === 'full' ? variant.price + DELIVERY_CHARGE : DELIVERY_CHARGE
   const [loading, setLoading] = useState(false)
 
+  const [customerInfo, setCustomerInfo] = useState({
+    name: '',
+    address: '',
+    phone: '',
+  })
+
   // Replace with your actual backend base URL
   // const baseUriBackend = 'https://your-backend-domain.com'
 
@@ -37,6 +43,18 @@ export default function ProductCheckout({ page }: { page: any }) {
     setLoading(true)
 
     try {
+      if (!customerInfo.name || !customerInfo.address || !customerInfo.phone) {
+        alert('Please fill all delivery information')
+        setLoading(false)
+        return
+      }
+
+      if (!/^01\d{9}$/.test(customerInfo.phone)) {
+        alert('Please enter a valid Bangladeshi mobile number')
+        setLoading(false)
+        return
+      }
+
       const response = await fetch(`/api/bkash/create`, {
         method: 'POST',
         headers: {
@@ -49,6 +67,7 @@ export default function ProductCheckout({ page }: { page: any }) {
           payerReference: payment === 'full' ? 'full' : 'partial',
           pricingId: variant.pricingId,
           size: variant.size,
+          customerInfo,
         }),
       })
 
@@ -69,6 +88,10 @@ export default function ProductCheckout({ page }: { page: any }) {
       setLoading(false)
     }
   }
+
+  const isFormValid =
+    customerInfo.name && customerInfo.address && /^01\d{9}$/.test(customerInfo.phone)
+
 
   return (
     <div className="w-[95%] pb-10 bg-white mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10 px-6 borer rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.25)] overflow-hidden">
@@ -122,6 +145,8 @@ export default function ProductCheckout({ page }: { page: any }) {
             id="name"
             className="w-full border rounded p-3 mt-2"
             placeholder="Enter Your Full Name"
+            value={customerInfo.name}
+            onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
           />
           <label className="font-semibold" htmlFor="address">
             Delivery Address
@@ -131,6 +156,8 @@ export default function ProductCheckout({ page }: { page: any }) {
             id="address"
             className="w-full border rounded p-3 mt-2"
             placeholder="House, Road, Area, District"
+            value={customerInfo.address}
+            onChange={(e) => setCustomerInfo({ ...customerInfo, address: e.target.value })}
           />
 
           <label className="font-semibold" htmlFor="mobile">
@@ -140,6 +167,8 @@ export default function ProductCheckout({ page }: { page: any }) {
             id="mobile"
             className="w-full border rounded p-3 mt-2"
             placeholder="Enter 11-digit Mobile Number"
+            value={customerInfo.phone}
+            onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
           />
         </section>
       </div>
@@ -202,8 +231,8 @@ export default function ProductCheckout({ page }: { page: any }) {
 
           <button
             onClick={handlePurchase}
-            disabled={loading}
-            className="w-full bg-black text-white py-3 rounded text-lg"
+            disabled={loading || !isFormValid}
+            className={`w-full bg-black text-white py-3 rounded text-lg ${loading || !isFormValid ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {loading ? 'Processing...' : `Place Purchase — ৳${total}`}
           </button>

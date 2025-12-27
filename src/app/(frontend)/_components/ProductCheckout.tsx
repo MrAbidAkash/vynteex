@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
+import { sendGTMEvent } from '@next/third-parties/google'
 import { useState } from 'react'
 
 // const variants = [
@@ -67,6 +68,8 @@ export default function ProductCheckout({ page }: { page: any }) {
 
   const handlePurchase = async () => {
     setLoading(true)
+
+    sendGTMEvent({ event: 'buttonClicked', value: 'xyz' })
 
     try {
       const newErrors = {

@@ -20,7 +20,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={playfair.variable}>
-      <GoogleTagManager gtmId="GTM-KXTSKLLN" />
+      <GoogleTagManager gtmId="GTM-KXTSKLLN" gtmScriptUrl='' />
 
       <body className="overflow-x-hidden">
         <Header />

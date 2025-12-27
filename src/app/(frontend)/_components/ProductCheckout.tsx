@@ -2,7 +2,7 @@
 'use client'
 
 import { sendGTMEvent } from '@next/third-parties/google'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 // const variants = [
 //   { id: 'turtleneck_black_single', label: 'Black – Single', price: 1200 },
@@ -23,7 +23,24 @@ export default function ProductCheckout({ page }: { page: any }) {
   const [variant, setVariant] = useState(data[0])
   console.log(variant)
   const [payment, setPayment] = useState<'partial' | 'full'>('partial')
-  const DELIVERY_CHARGE = 1
+
+  const [deliveryCharge, setDeliveryCharge] = useState(50)
+
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const deliveryCharge = await fetch(`/getDeliveryCharge`)
+        const deliveryChargeData = await deliveryCharge.json()
+        setDeliveryCharge(deliveryChargeData)
+      } catch (error) {
+        console.log(error)
+      }
+    })()
+  }, [])
+
+  console.log(deliveryCharge)
+
+  const DELIVERY_CHARGE = deliveryCharge
   const total = payment === 'full' ? variant.price + DELIVERY_CHARGE : DELIVERY_CHARGE
   const [loading, setLoading] = useState(false)
 

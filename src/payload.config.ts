@@ -12,6 +12,7 @@ import { cloudinaryStorage } from 'payload-storage-cloudinary' // 🟢
 import BkashTokens from './collections/BkashTokens'
 import BkashPayments from './collections/BkashPayments'
 import { bkashCallback, createPayment } from './endpoints/bkash'
+import DeliveryCharge from './collections/DeliveryCharge'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -23,7 +24,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, ProductLanding, BkashTokens, BkashPayments],
+  collections: [Users, Media, ProductLanding, BkashTokens, BkashPayments, DeliveryCharge],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

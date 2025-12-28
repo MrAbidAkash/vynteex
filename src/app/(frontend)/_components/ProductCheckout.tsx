@@ -84,7 +84,7 @@ export default function ProductCheckout({ page }: { page: any }) {
     }
 
     try {
-      const response = await fetch('/api/conversion', {
+      const response = await fetch('/fb-conversion', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(eventData),

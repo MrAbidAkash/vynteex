@@ -1,7 +1,7 @@
 // app/api/conversion/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function POST(request: NextRequest) {
+export async function POST(request: any) {
   const { eventName, eventId, userData, customData } = await request.json()
 
   // 1. Construct the event payload based on Facebook's spec
@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
         event_source_url: request.headers.get('referer') || '',
         user_data: {
           client_ip_address:
-            request.ip || request.headers.get('x-forwarded-for')?.split(',')[0] || '0.0.0.0',
+            request?.ip  || request.headers.get('x-forwarded-for')?.split(',')[0] || '0.0.0.0',
           client_user_agent: request.headers.get('user-agent') || '',
           // **Crucially, hash sensitive user data (email, phone) before sending.**
           // em: hashData(userData.email),

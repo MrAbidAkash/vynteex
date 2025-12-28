@@ -143,7 +143,7 @@ export default function ProductCheckout({ page }: { page: any }) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: token,
+          // Authorization: token,
         },
         body: JSON.stringify({
           amount: total,

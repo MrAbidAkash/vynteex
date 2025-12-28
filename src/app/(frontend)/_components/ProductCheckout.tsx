@@ -17,14 +17,20 @@ import { useEffect, useState } from 'react'
 
 export default function ProductCheckout({ page }: { page: any }) {
   const data = page?.pricing
-
-  console.log(data)
-
   const [variant, setVariant] = useState(data[0])
-  console.log(variant)
   const [payment, setPayment] = useState<'partial' | 'full'>('partial')
-
   const [deliveryCharge, setDeliveryCharge] = useState(50)
+  const [loading, setLoading] = useState(false)
+  const [customerInfo, setCustomerInfo] = useState({
+    name: '',
+    address: '',
+    phone: '',
+  })
+  const [errors, setErrors] = useState<{
+    name?: string
+    address?: string
+    phone?: string
+  }>({})
 
   useEffect(() => {
     ;(async () => {
@@ -38,46 +44,71 @@ export default function ProductCheckout({ page }: { page: any }) {
     })()
   }, [])
 
-  console.log(deliveryCharge)
-
   const DELIVERY_CHARGE = deliveryCharge
   const total = payment === 'full' ? variant.price + DELIVERY_CHARGE : DELIVERY_CHARGE
-  const [loading, setLoading] = useState(false)
 
-  const [customerInfo, setCustomerInfo] = useState({
-    name: '',
-    address: '',
-    phone: '',
-  })
+  // Function to hash sensitive data (required by Facebook CAPI)
+  const hashData = (data: string): string => {
+    // This is a simplified example - implement proper SHA-256 hashing
+    // In production, use: crypto.subtle.digest('SHA-256', ...)
+    return btoa(data) // Replace with actual SHA-256 implementation
+  }
 
-  const [errors, setErrors] = useState<{
-    name?: string
-    address?: string
-    phone?: string
-  }>({})
+  // Facebook Conversions API Event Function
+  const sendPurchaseEvent = async () => {
+    const eventData = {
+      eventName: 'Purchase',
+      eventId: `purchase_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      userData: {
+        // Hash sensitive data before sending
+        em: customerInfo.phone ? hashData(customerInfo.phone) : undefined,
+        // In a real implementation, you might want to hash email if collected
+        client_ip_address: '', // Will be captured server-side
+        client_user_agent: navigator.userAgent,
+      },
+      customData: {
+        currency: 'BDT',
+        value: total,
+        contents: [
+          {
+            id: variant.id || variant.pricingId,
+            quantity: 1,
+            item_price: variant.price,
+          },
+        ],
+        payment_type: payment === 'full' ? 'full_payment' : 'partial_payment',
+        delivery_charge: DELIVERY_CHARGE,
+        product_name: variant.label,
+        size: variant.size,
+      },
+    }
 
-  // Replace with your actual backend base URL
-  // const baseUriBackend = 'https://your-backend-domain.com'
-
-  // Fetch auth token from cookies or your auth state
-  // Just example, replace with your real auth token retrieval
-  const token = 'user-auth-token'
+    try {
+      const response = await fetch('/api/conversion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(eventData),
+      })
+      const result = await response.json()
+      console.log('Facebook CAPI Event sent:', result)
+    } catch (error) {
+      console.error('Failed to send Facebook CAPI event:', error)
+      // Consider implementing retry logic or fallback here
+    }
+  }
 
   const validateField = (field: 'name' | 'address' | 'phone', value: string) => {
     switch (field) {
       case 'name':
         if (!value.trim()) return 'Name is required'
         return undefined
-
       case 'address':
         if (!value.trim()) return 'Address is required'
         return undefined
-
       case 'phone':
         if (!value.trim()) return 'Mobile number is required'
         if (!/^01\d{9}$/.test(value)) return 'Enter a valid 11-digit Bangladeshi number'
         return undefined
-
       default:
         return undefined
     }
@@ -86,6 +117,7 @@ export default function ProductCheckout({ page }: { page: any }) {
   const handlePurchase = async () => {
     setLoading(true)
 
+    // Send Google Tag Manager event
     sendGTMEvent({ event: 'buttonClicked', value: 'xyz' })
 
     try {
@@ -103,11 +135,15 @@ export default function ProductCheckout({ page }: { page: any }) {
 
       setErrors({})
 
+      // Send Facebook Purchase Event
+      await sendPurchaseEvent()
+
+      // Original bKash payment logic
       const response = await fetch(`/api/bkash/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: token, // your auth token if needed
+          Authorization: token,
         },
         body: JSON.stringify({
           amount: total,
@@ -121,10 +157,7 @@ export default function ProductCheckout({ page }: { page: any }) {
 
       const data = await response.json()
 
-      console.log('ddtdt', data)
-
       if (data?.statusMessage === 'Successful' && data?.bkashURL) {
-        // Redirect to bKash payment gateway
         window.location.href = data.bkashURL
       } else {
         alert('Failed to initiate bKash payment: ' + JSON.stringify(data.error || data))

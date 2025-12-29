@@ -83,7 +83,7 @@ export default function ProductCheckout({ page }: { page: any }) {
     })
   }
 
-  // sendViewContentEvent()
+  sendViewContentEvent()
 
   // Facebook Conversions API Event Function
   // Updated sendInitialCheckOutEvent function in ProductCheckout component

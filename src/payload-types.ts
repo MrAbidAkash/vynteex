@@ -234,12 +234,12 @@ export interface ProductLanding {
  * via the `definition` "bkash-tokens".
  */
 export interface BkashToken {
-  id: string;
-  accessToken: string;
-  refreshToken: string;
-  expiresIn: number;
-  createdAt: string;
-  updatedAt: string;
+  id: string
+  accessToken: string
+  refreshToken: string
+  expiresIn: number | Date
+  createdAt: string
+  updatedAt: string
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

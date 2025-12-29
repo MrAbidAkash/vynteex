@@ -7,7 +7,7 @@ function hashData(value: string): string {
   return crypto.createHash('sha256').update(normalized).digest('hex')
 }
 
-export function buildUserData(customerInfo: any, request: any) {
+function buildUserData(customerInfo: any, request: any) {
   const userData: Record<string, any> = {}
 
   // 🔐 Hashed PII fields (arrays)

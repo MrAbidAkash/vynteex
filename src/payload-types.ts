@@ -226,15 +226,6 @@ export interface ProductLanding {
         id?: string | null;
       }[]
     | null;
-  offerEnd: string;
-  details: string;
-  sizes?:
-    | {
-        size: string;
-        id?: string | null;
-      }[]
-    | null;
-  footer?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -472,15 +463,6 @@ export interface ProductLandingSelect<T extends boolean = true> {
             };
         id?: T;
       };
-  offerEnd?: T;
-  details?: T;
-  sizes?:
-    | T
-    | {
-        size?: T;
-        id?: T;
-      };
-  footer?: T;
   updatedAt?: T;
   createdAt?: T;
 }

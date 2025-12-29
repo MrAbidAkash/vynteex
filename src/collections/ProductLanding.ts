@@ -102,40 +102,40 @@ export const ProductLanding: CollectionConfig = {
     },
 
     // Countdown Offer
-    {
-      name: 'offerEnd',
-      type: 'date',
-      required: true,
-      admin: {
-        date: { pickerAppearance: 'dayAndTime' }, // Enables time selection
-      },
-    },
+    // {
+    //   name: 'offerEnd',
+    //   type: 'date',
+    //   required: true,
+    //   admin: {
+    //     date: { pickerAppearance: 'dayAndTime' }, // Enables time selection
+    //   },
+    // },
 
-    // Product Info
-    {
-      name: 'details',
-      type: 'textarea',
-      required: true,
-    },
+    // // Product Info
+    // {
+    //   name: 'details',
+    //   type: 'textarea',
+    //   required: true,
+    // },
 
     // Sizes
-    {
-      name: 'sizes',
-      type: 'array',
-      minRows: 1,
-      fields: [
-        {
-          name: 'size',
-          type: 'text',
-          required: true,
-        },
-      ],
-    },
+    // {
+    //   name: 'sizes',
+    //   type: 'array',
+    //   minRows: 1,
+    //   fields: [
+    //     {
+    //       name: 'size',
+    //       type: 'text',
+    //       required: true,
+    //     },
+    //   ],
+    // },
 
     // Footer text
-    {
-      name: 'footer',
-      type: 'text',
-    },
+    // {
+    //   name: 'footer',
+    //   type: 'text',
+    // },
   ],
 }

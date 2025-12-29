@@ -3,7 +3,7 @@
 
 import { useSearchParams } from 'next/navigation'
 import { CheckCircle } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 // import { useEffect } from 'react'
 // import { getPayload } from '@/lib/payload'
 
@@ -32,7 +32,71 @@ export default function PaymentSuccess() {
 
   console.log('payment', paymentData)
 
-  if (!paymentID || !paymentData || paymentData?.error || paymentData?.transactionStatus !== 'Completed') {
+  const booked =
+    paymentData?.transactionStatus === 'Completed' && paymentData?.payerReference === 'partial'
+  const purchased =
+    paymentData?.transactionStatus === 'Completed' && paymentData?.payerReference === 'full'
+
+  const hasSentPurchaseEvent = useRef(false)
+
+   const sendPurchaseEvent = async () => {
+     const orderId = `purchase_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+
+     // Send data in the correct structure for your backend to process
+     const eventData = {
+       event_name: 'Purchase', // Use snake_case
+       event_id: orderId,
+       // Pass required web parameters. Your backend will hash 'phone'.
+       customer_info: {
+         name: paymentData?.customerInfo.name,
+         phone: paymentData?.customerInfo.phone,
+         address: paymentData?.customerInfo.address,
+       },
+       currency: 'BDT',
+       paid: paymentData?.amount,
+       // due:,
+       // Facebook will read standard fields like 'content_ids' from custom_data
+       custom_data: {
+         content_ids: [paymentData.id || paymentData.pricingId],
+         content_type: 'product',
+         // You can keep other fields; they may be ignored but won't break the call.
+         product_name: paymentData?.productInfo.label,
+         size: paymentData.size,
+         productPrice: paymentData?.productInfo.price,
+         // delivery_charge: DELIVERY_CHARGE,
+       },
+     }
+
+     console.log('eventData', eventData)
+
+     try {
+       const response = await fetch('/fb-conversion', {
+         // Ensure endpoint is correct
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify(eventData), // Send the new structure
+       })
+       const result = await response.json()
+       console.log('Event sent:', result)
+     } catch (error) {
+       console.error('Failed to send event:', error)
+     }
+   }
+
+
+  useEffect(() => {
+    if ((purchased || booked) && !hasSentPurchaseEvent.current) {
+      sendPurchaseEvent()
+      hasSentPurchaseEvent.current = true
+    }
+  }, [purchased, booked])
+
+  if (
+    !paymentID ||
+    !paymentData ||
+    paymentData?.error ||
+    paymentData?.transactionStatus !== 'Completed'
+  ) {
     return (
       <div className="min-h-[50vh] bg-gray-100 flex flex-col justify-center items-center px-3 py-6">
         <h2 className="text-2xl font-semibold">invalid page</h2>
@@ -46,59 +110,7 @@ export default function PaymentSuccess() {
     )
   }
 
-  const booked =
-    paymentData?.transactionStatus === 'Completed' && paymentData?.payerReference === 'partial'
-  const purchased =
-    paymentData?.transactionStatus === 'Completed' && paymentData?.payerReference === 'full'
-
-  const sendPurchaseEvent = async () => {
-    const orderId = `initial_checkout_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-
-    // Send data in the correct structure for your backend to process
-    const eventData = {
-      event_name: 'Purchase', // Use snake_case
-      event_id: orderId,
-      // Pass required web parameters. Your backend will hash 'phone'.
-      customer_info: {
-        name: paymentData?.customerInfo.name,
-        phone: paymentData?.customerInfo.phone,
-        address: paymentData?.customerInfo.address,
-      },
-      currency: 'BDT',
-      paid: paymentData?.amount,
-      // due:,
-      // Facebook will read standard fields like 'content_ids' from custom_data
-      custom_data: {
-        content_ids: [paymentData.id || paymentData.pricingId],
-        content_type: 'product',
-        // You can keep other fields; they may be ignored but won't break the call.
-        product_name: paymentData?.productInfo.label,
-        size: paymentData.size,
-        productPrice: paymentData?.productInfo.price,
-        // delivery_charge: DELIVERY_CHARGE,
-      },
-    }
-
-    console.log('eventData', eventData)
-
-    try {
-      const response = await fetch('/fb-conversion', {
-        // Ensure endpoint is correct
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(eventData), // Send the new structure
-      })
-      const result = await response.json()
-      console.log('Event sent:', result)
-    } catch (error) {
-      console.error('Failed to send event:', error)
-    }
-  }
-
-  if (purchased) {
-    sendPurchaseEvent()
-  }
-
+ 
   // Normally these should come from DB
   const customer = paymentData?.customerInfo
 

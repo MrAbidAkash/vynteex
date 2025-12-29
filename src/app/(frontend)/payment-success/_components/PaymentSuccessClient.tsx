@@ -18,6 +18,7 @@ export default function PaymentSuccess() {
   const trxID = paymentData?.trxID
 
   useEffect(() => {
+    if (!paymentID) return
     ;(async () => {
       try {
         const payment = await fetch(`/getPaymentInfo?paymentID=${paymentID}`)
@@ -39,57 +40,61 @@ export default function PaymentSuccess() {
 
   const hasSentPurchaseEvent = useRef(false)
 
-   const sendPurchaseEvent = async () => {
-     const orderId = `purchase_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  const sendPurchaseEvent = async () => {
+    const orderId = `purchase_bkash_${paymentID}_${trxID}`
 
-     // Send data in the correct structure for your backend to process
-     const eventData = {
-       event_name: 'Purchase', // Use snake_case
-       event_id: orderId,
-       // Pass required web parameters. Your backend will hash 'phone'.
-       customer_info: {
-         name: paymentData?.customerInfo.name,
-         phone: paymentData?.customerInfo.phone,
-         address: paymentData?.customerInfo.address,
-       },
-       currency: 'BDT',
-       paid: paymentData?.amount,
-       // due:,
-       // Facebook will read standard fields like 'content_ids' from custom_data
-       custom_data: {
-         content_ids: [paymentData.id || paymentData.pricingId],
-         content_type: 'product',
-         // You can keep other fields; they may be ignored but won't break the call.
-         product_name: paymentData?.productInfo.label,
-         size: paymentData.size,
-         productPrice: paymentData?.productInfo.price,
-         // delivery_charge: DELIVERY_CHARGE,
-       },
-     }
+    // Send data in the correct structure for your backend to process
+    const eventData = {
+      event_name: booked ? 'Partial Purchase' : purchased ? 'Full Purchase' : 'Purchase', // Use snake_case
+      event_id: orderId,
+      // Pass required web parameters. Your backend will hash 'phone'.
+      customer_info: {
+        name: paymentData?.customerInfo.name,
+        phone: paymentData?.customerInfo.phone,
+        address: paymentData?.customerInfo.address,
+      },
+      currency: 'BDT',
+      paid: paymentData?.amount,
+      // due:,
+      // Facebook will read standard fields like 'content_ids' from custom_data
+      custom_data: {
+        content_ids: [paymentData.id || paymentData.pricingId],
+        content_type: 'product',
+        // You can keep other fields; they may be ignored but won't break the call.
+        product_name: paymentData?.productInfo.label,
+        size: paymentData.size,
+        productPrice: paymentData?.productInfo.price,
+        // delivery_charge: DELIVERY_CHARGE,
+      },
+    }
 
-     console.log('eventData', eventData)
+    console.log('eventData', eventData)
 
-     try {
-       const response = await fetch('/fb-conversion', {
-         // Ensure endpoint is correct
-         method: 'POST',
-         headers: { 'Content-Type': 'application/json' },
-         body: JSON.stringify(eventData), // Send the new structure
-       })
-       const result = await response.json()
-       console.log('Event sent:', result)
-     } catch (error) {
-       console.error('Failed to send event:', error)
-     }
-   }
-
+    try {
+      const response = await fetch('/fb-conversion', {
+        // Ensure endpoint is correct
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(eventData), // Send the new structure
+      })
+      const result = await response.json()
+      console.log('Event sent:', result)
+    } catch (error) {
+      console.error('Failed to send event:', error)
+    }
+  }
 
   useEffect(() => {
+    if (!paymentID) return
+    if (!paymentData) return
+    if (paymentData.transactionStatus !== 'Completed') return
+    if (!paymentData.trxID) return
+
     if ((purchased || booked) && !hasSentPurchaseEvent.current) {
       sendPurchaseEvent()
       hasSentPurchaseEvent.current = true
     }
-  }, [purchased, booked])
+  }, [paymentID, paymentData, purchased, booked])
 
   if (
     !paymentID ||
@@ -110,7 +115,6 @@ export default function PaymentSuccess() {
     )
   }
 
- 
   // Normally these should come from DB
   const customer = paymentData?.customerInfo
 

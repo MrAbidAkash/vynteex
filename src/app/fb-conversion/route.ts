@@ -7,21 +7,39 @@ function hashData(value: string): string {
   return crypto.createHash('sha256').update(normalized).digest('hex')
 }
 
-function buildUserData(customerInfo: any, request: any) {
-  const userData: Record<string, any> = {} // Note: values can be arrays
+export function buildUserData(customerInfo: any, request: any) {
+  const userData: Record<string, any> = {}
 
-  // 1. HASH required personal identifiers (as arrays)
+  // 🔐 Hashed PII fields (arrays)
   if (customerInfo.email) userData.em = [hashData(customerInfo.email)]
-  if (customerInfo.phone) userData.ph = [hashData(customerInfo.phone)]
-  // Add other fields like fn, ln, etc., if you collect them
 
-  // 2. Add NON-HASHED required web parameters
+  if (customerInfo.phone) userData.ph = [hashData(customerInfo.phone)]
+
+  if (customerInfo.name) userData.fn = [hashData(customerInfo.name)]
+
+  if (customerInfo.firstName) userData.fn = [hashData(customerInfo.firstName)]
+
+  if (customerInfo.lastName) userData.ln = [hashData(customerInfo.lastName)]
+
+  if (customerInfo.city) userData.ct = [hashData(customerInfo.city)]
+
+  if (customerInfo.state) userData.st = [hashData(customerInfo.state)]
+
+  if (customerInfo.country) userData.country = [hashData(customerInfo.country)]
+
+  if (customerInfo.zip) userData.zp = [hashData(customerInfo.zip)]
+
+  if (customerInfo.address) userData.ct = [hashData(customerInfo.address)]
+
+  // 🌐 Non-hashed web parameters
   userData.client_ip_address =
     request.ip || request.headers.get('x-forwarded-for')?.split(',')[0] || ''
+
   userData.client_user_agent = request.headers.get('user-agent') || ''
-  // Get Facebook cookies for better tracking
-  userData.fbc = request.cookies.get('_fbc')?.value || ''
-  userData.fbp = request.cookies.get('_fbp')?.value || ''
+
+  // Facebook cookies (VERY IMPORTANT for match quality)
+  userData.fbc = request.cookies.get('_fbc')?.value || undefined
+  userData.fbp = request.cookies.get('_fbp')?.value || undefined
 
   return userData
 }

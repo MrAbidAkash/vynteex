@@ -52,7 +52,7 @@ function PriceCard({
     >
       <p className="text-md font-semibold bg-(--accent) p-3 px-5 rounded-full mb-3">{value}</p>
       <p className="text-2xl font-normal font-playfair">{title}</p>
-      <p className="text-lg font-normal mt-2">{price}</p>
+      <p className="text-lg font-normal mt-2 line-through">{price}</p>
       <p className="text-4xl font-bold mt-2 linethrough">{offerPrice}</p>
     </div>
   )

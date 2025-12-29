@@ -111,6 +111,7 @@ export default function ProductCheckout({ page }: { page: any }) {
         // You can keep other fields; they may be ignored but won't break the call.
         product_name: variant.label,
         size: variant.size || variant.sizes?.[0].size,
+        product_price: variant.price,
         delivery_charge: DELIVERY_CHARGE,
       },
     }
@@ -335,9 +336,9 @@ export default function ProductCheckout({ page }: { page: any }) {
 
           {/* COD */}
           <div className="bg-gray-50 p-4 rounded">
-            <h4 className="font-semibold text-lg">Cash on Delivery</h4>
+            <h4 className="font-semibold text-lg">Cash on Parcel</h4>
             <p className="text-sm text-gray-600 leading-relaxed mt-2">
-              Pay after receiving the product. COD charge may vary based on location.
+              Pay after receiving the product. COP charge may vary based on location.
             </p>
           </div>
 
@@ -349,13 +350,13 @@ export default function ProductCheckout({ page }: { page: any }) {
                 onClick={() => setPayment('partial')}
                 className={`flex-1 py-2 ${payment === 'partial' ? 'bg-blue-600 text-white' : ''}`}
               >
-                Advance Delivery Charge
+                Advance Parcel Charge
               </button>
               <button
                 onClick={() => setPayment('full')}
                 className={`flex-1 py-2 ${payment === 'full' ? 'bg-blue-600 text-white' : ''}`}
               >
-                Full Advance Payment
+                Full Parcel Payment
               </button>
             </div>
           </div>

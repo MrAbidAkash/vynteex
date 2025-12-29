@@ -46,7 +46,7 @@ const LandingPage = ({ page }: { page: any }) => {
       <div className="bg-(--light)">
         <div className="max-w-330 w-full flex flex-col justify-center items-center mx-auto">
           <ParcelInfo />
-          <div className="px-5 pb-20">
+          <div className="sm:px-5 px-2 pb-20">
             <ProductCheckout page={page} />{' '}
           </div>
         </div>

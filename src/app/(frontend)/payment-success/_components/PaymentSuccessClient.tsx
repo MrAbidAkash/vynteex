@@ -54,7 +54,7 @@ export default function PaymentSuccess() {
         address: paymentData?.customerInfo.address,
       },
       currency: 'BDT',
-      paid: paymentData?.amount,
+      value: paymentData?.amount,
       // due:,
       // Facebook will read standard fields like 'content_ids' from custom_data
       custom_data: {

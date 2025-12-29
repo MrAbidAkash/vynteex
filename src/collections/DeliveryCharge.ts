@@ -10,7 +10,15 @@ const DeliveryCharge: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: () => true,
+    // ❌ Prevent creating more than one
+    create: async ({ req }) => {
+      const existing = await req.payload.find({
+        collection: 'delivery-charge',
+        limit: 1,
+      })
+
+      return existing.totalDocs === 0
+    },
     update: () => true,
     // delete: () => true,
   },
@@ -19,7 +27,7 @@ const DeliveryCharge: CollectionConfig = {
       name: 'deliveryCharge',
       type: 'number',
       required: true,
-      max: 1,
+      // max: 1,
       defaultValue: 50,
     },
   ],

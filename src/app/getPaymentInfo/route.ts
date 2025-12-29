@@ -27,6 +27,8 @@ export async function GET(req: Request) {
 
   const order = orderData.docs[0]
 
+  console.log('Oder', order)
+
   if (!order) {
     console.log('Oder not found', order)
     return Response.json({ error: 'Order not found' }, { status: 404 })
@@ -35,7 +37,10 @@ export async function GET(req: Request) {
   // ✅ Match pricing by pricingId
   const matchedPricing = order.product?.pricing?.find((p: any) => p.pricingId === order.pricingId)
 
+  console.log('matchedPricing', matchedPricing)
+
   const response = {
+    id: order.id,
     pricingId: order.pricingId,
     productInfo: matchedPricing || null,
     amount: order.amount,

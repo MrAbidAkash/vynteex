@@ -22,6 +22,7 @@ export default function PaymentSuccess() {
       try {
         const payment = await fetch(`/getPaymentInfo?paymentID=${paymentID}`)
         const paymentData = await payment.json()
+
         setPaymentData(paymentData)
       } catch (error) {
         console.log(error)
@@ -30,6 +31,73 @@ export default function PaymentSuccess() {
   }, [paymentID])
 
   console.log('payment', paymentData)
+
+  if (!paymentID || !paymentData || paymentData?.error || paymentData?.transactionStatus !== 'Completed') {
+    return (
+      <div className="min-h-[50vh] bg-gray-100 flex flex-col justify-center items-center px-3 py-6">
+        <h2 className="text-2xl font-semibold">invalid page</h2>
+        <button
+          onClick={() => (window.location.href = '/')}
+          className="bg-black text-white px-3 py-2 rounded-md mt-10 cursor-pointer"
+        >
+          Go Home
+        </button>
+      </div>
+    )
+  }
+
+  const booked =
+    paymentData?.transactionStatus === 'Completed' && paymentData?.payerReference === 'partial'
+  const purchased =
+    paymentData?.transactionStatus === 'Completed' && paymentData?.payerReference === 'full'
+
+  const sendPurchaseEvent = async () => {
+    const orderId = `initial_checkout_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+
+    // Send data in the correct structure for your backend to process
+    const eventData = {
+      event_name: 'Purchase', // Use snake_case
+      event_id: orderId,
+      // Pass required web parameters. Your backend will hash 'phone'.
+      customer_info: {
+        name: paymentData?.customerInfo.name,
+        phone: paymentData?.customerInfo.phone,
+        address: paymentData?.customerInfo.address,
+      },
+      currency: 'BDT',
+      paid: paymentData?.amount,
+      // due:,
+      // Facebook will read standard fields like 'content_ids' from custom_data
+      custom_data: {
+        content_ids: [paymentData.id || paymentData.pricingId],
+        content_type: 'product',
+        // You can keep other fields; they may be ignored but won't break the call.
+        product_name: paymentData?.productInfo.label,
+        size: paymentData.size,
+        productPrice: paymentData?.productInfo.price,
+        // delivery_charge: DELIVERY_CHARGE,
+      },
+    }
+
+    console.log('eventData', eventData)
+
+    try {
+      const response = await fetch('/fb-conversion', {
+        // Ensure endpoint is correct
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(eventData), // Send the new structure
+      })
+      const result = await response.json()
+      console.log('Event sent:', result)
+    } catch (error) {
+      console.error('Failed to send event:', error)
+    }
+  }
+
+  if (purchased) {
+    sendPurchaseEvent()
+  }
 
   // Normally these should come from DB
   const customer = paymentData?.customerInfo
@@ -41,20 +109,20 @@ export default function PaymentSuccess() {
     price: paymentData?.productInfo?.price,
   }
 
-  if (!paymentID) {
-    return <h2>invalid page</h2>
-  }
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center px-3 py-6">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-md overflow-hidden">
+      <div className="w-full min px-3 max-w-md bg-white rounded-xl shadow-md overflow-hidden">
         {/* Header */}
         <div className="bg-black text-white text-center py-8">
           <div className="flex justify-center mb-3">
             <CheckCircle size={56} className="text-green-400" />
           </div>
-          <h1 className="text-2xl font-semibold">Purchase Completed</h1>
+          <h1 className="text-2xl font-semibold">
+            {booked ? 'Booking Completed' : purchased ? 'Purchase Completed' : 'Payment Failed'}
+          </h1>
           <p className="text-sm text-gray-300 mt-1">
-            Thank you for choosing us — your purchase has been confirmed
+            Thank you for choosing us — your{' '}
+            {booked ? 'booking' : purchased ? 'purchase' : 'payment'} has been confirmed
           </p>
         </div>
 
@@ -82,7 +150,7 @@ export default function PaymentSuccess() {
           {/* Summary */}
           <section>
             <h2 className="font-semibold text-lg border-l-4 border-yellow-400 pl-3 mb-3">
-              Purchase Summary
+              {booked ? 'Booking Summary' : purchased ? 'Purchase Summary' : 'Payment Summary'}
             </h2>
 
             <div className="overflow-x-auto">
@@ -117,7 +185,9 @@ export default function PaymentSuccess() {
           {/* Payment Info */}
           <section className="bg-green-50 rounded-lg p-4 text-sm">
             <p>
-              <span className="font-medium">Payment Status:</span>{' '}
+              <span className="font-medium">
+                {booked ? 'Booking' : purchased ? 'Purchase' : 'Payment'} Status:
+              </span>{' '}
               <span className="text-green-600 font-semibold capitalize">{status}</span>
             </p>
             <p className="mt-1 break-all">

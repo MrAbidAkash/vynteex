@@ -63,6 +63,7 @@ export const createPayment: Endpoint = {
         product: '694c043b3c39fea58629ca3a',
         amount: data.amount,
         transactionStatus: data.transactionStatus || 'Pending',
+        payerReference: payerReference || '',
         pricingId,
         size,
         customerInfo,
@@ -193,7 +194,6 @@ export const bkashCallback: Endpoint = {
           amount: parseFloat(data.amount) || 0,
           currency: data.currency || 'BDT',
           merchantInvoiceNo: data.merchantInvoiceNumber,
-          payerReference: data.payerReference || '',
         },
       })
 
@@ -208,7 +208,6 @@ export const bkashCallback: Endpoint = {
         where: { paymentID: { equals: paymentID } },
         data: {
           transactionStatus: 'Error',
-          // payerReference: searchParams.get('payerReference') || '',
         },
       })
 

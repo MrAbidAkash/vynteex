@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react'
 export default function ProductCheckout({ page }: { page: any }) {
   const data = page?.pricing
   const [variant, setVariant] = useState(data[0])
+  console.log('variant', variant)
   const [payment, setPayment] = useState<'partial' | 'full'>('partial')
   const [deliveryCharge, setDeliveryCharge] = useState(50)
   const [loading, setLoading] = useState(false)
@@ -54,46 +55,76 @@ export default function ProductCheckout({ page }: { page: any }) {
     return btoa(data) // Replace with actual SHA-256 implementation
   }
 
-  // Facebook Conversions API Event Function
-  const sendPurchaseEvent = async () => {
+  // Example: ViewContent event (call on product page mount)
+  const sendViewContentEvent = async () => {
     const eventData = {
-      eventName: 'Purchase',
-      eventId: `purchase_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      userData: {
-        // Hash sensitive data before sending
-        em: customerInfo.phone ? hashData(customerInfo.phone) : undefined,
-        // In a real implementation, you might want to hash email if collected
-        client_ip_address: '', // Will be captured server-side
-        client_user_agent: navigator.userAgent,
+      event_name: 'ViewContent',
+      event_id: `view_${variant.id}_${Date.now()}`,
+      customer_info: {
+        // Collect/capture customer info if available
+        name: customerInfo.name,
+        phone: customerInfo.phone,
+        address: customerInfo.address,
       },
-      customData: {
+      custom_data: {
+        variant,
+        content_name: variant.label,
+        content_ids: [variant.id],
+        content_type: 'product',
         currency: 'BDT',
-        value: total,
-        contents: [
-          {
-            id: variant.id || variant.pricingId,
-            quantity: 1,
-            item_price: variant.price,
-          },
-        ],
-        payment_type: payment === 'full' ? 'full_payment' : 'partial_payment',
-        delivery_charge: DELIVERY_CHARGE,
+        value: variant.price,
+      },
+    }
+
+    await fetch('/fb-conversion', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(eventData),
+    })
+  }
+
+  // sendViewContentEvent()
+
+  // Facebook Conversions API Event Function
+  // Updated sendInitialCheckOutEvent function in ProductCheckout component
+  const sendInitialCheckOutEvent = async () => {
+    const orderId = `initial_checkout_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+
+    // Send data in the correct structure for your backend to process
+    const eventData = {
+      event_name: 'Initiate Checkout', // Use snake_case
+      event_id: orderId,
+      // Pass required web parameters. Your backend will hash 'phone'.
+      customer_info: {
+        name: customerInfo.name,
+        phone: customerInfo.phone,
+        address: customerInfo.address,
+      },
+      currency: 'BDT',
+      value: total,
+      // Facebook will read standard fields like 'content_ids' from custom_data
+      custom_data: {
+        variant,
+        content_ids: [variant.id || variant.pricingId],
+        content_type: 'product',
+        // You can keep other fields; they may be ignored but won't break the call.
         product_name: variant.label,
-        size: variant.size,
+        size: variant.size || variant.sizes?.[0].size,
+        delivery_charge: DELIVERY_CHARGE,
       },
     }
 
     try {
       const response = await fetch('/fb-conversion', {
+        // Ensure endpoint is correct
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(eventData),
+        body: JSON.stringify(eventData), // Send the new structure
       })
       const result = await response.json()
-      console.log('Facebook CAPI Event sent:', result)
+      console.log('Event sent:', result)
     } catch (error) {
-      console.error('Failed to send Facebook CAPI event:', error)
-      // Consider implementing retry logic or fallback here
+      console.error('Failed to send event:', error)
     }
   }
 
@@ -136,7 +167,7 @@ export default function ProductCheckout({ page }: { page: any }) {
       setErrors({})
 
       // Send Facebook Purchase Event
-      await sendPurchaseEvent()
+      await sendInitialCheckOutEvent()
 
       // Original bKash payment logic
       const response = await fetch(`/api/bkash/create`, {
@@ -150,7 +181,7 @@ export default function ProductCheckout({ page }: { page: any }) {
           callbackURL: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/bkash/callback`,
           payerReference: payment === 'full' ? 'full' : 'partial',
           pricingId: variant.pricingId,
-          size: variant.size,
+          size: variant.size || variant.sizes?.[0].size,
           customerInfo,
         }),
       })

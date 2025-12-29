@@ -83,8 +83,9 @@ export default function ProductCheckout({ page }: { page: any }) {
     })
   }
 
-  sendViewContentEvent()
-
+  useEffect(() => {
+    sendViewContentEvent()
+  }, [])
   // Facebook Conversions API Event Function
   // Updated sendInitialCheckOutEvent function in ProductCheckout component
   const sendInitialCheckOutEvent = async () => {

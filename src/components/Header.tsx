@@ -21,7 +21,7 @@ export default function Header() {
         </Link>
         <button
           onClick={handleBuyNow}
-          className="bg-black text-white px-8 py-3 rounded-full text-md cursor-pointer animate-pulse"
+          className="bg-black text-white px-8 py-3 rounded-full text-md cursor-pointer enroll_Now"
         >
           Buy Now
         </button>

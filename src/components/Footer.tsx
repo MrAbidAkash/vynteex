@@ -10,6 +10,7 @@ export default function Footer() {
   const lastIndex = useRef(0)
   useEffect(() => {
     console.log('lastIndex', lastIndex)
+    // Show toast immediately
     const interval = setInterval(() => {
       let index
       do {
@@ -22,8 +23,8 @@ export default function Footer() {
       const minutes = minutesOptions[Math.floor(Math.random() * minutesOptions.length)]
 
       toast(
-        <div className="flex items-center justify-center gap-2">
-          <strong>
+        <div className="flex items-center justify-center gap-2 ">
+          <strong className="text-red-600">
             {buyer.name} from {buyer.city}
           </strong>
           <span>Purchased {minutes} minutes ago</span>
@@ -34,7 +35,7 @@ export default function Footer() {
           },
         },
       )
-    }, 10000)
+    }, 6000)
 
     return () => clearInterval(interval)
   }, [])

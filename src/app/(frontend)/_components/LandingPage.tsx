@@ -46,7 +46,7 @@ const LandingPage = ({ page }: { page: any }) => {
       <div className="bg-(--light)">
         <div className="max-w-330 w-full flex flex-col justify-center items-center mx-auto">
           <ParcelInfo />
-          <div className="sm:px-5 px-2 pb-20">
+          <div id="checkout" className="sm:px-5 px-2 pb-20">
             <ProductCheckout page={page} />{' '}
           </div>
         </div>
@@ -78,6 +78,12 @@ const LandingPage = ({ page }: { page: any }) => {
           </svg>
         </a>
       </div>
+      {/* <div>
+        <div className="toast-notification" id="toastBox">
+          <strong id="toastName">Javed from Dhaka</strong>
+          <span id="toastMessage">Purchased 1 minutes ago</span>
+        </div>
+      </div> */}
     </div>
   )
 }

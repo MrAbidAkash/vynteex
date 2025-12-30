@@ -1,5 +1,6 @@
 {
-  "name": "",
+  "name": "vynteex",
+  "author": "Mr.AbidAkash",
   "version": "1.0.0",
   "description": "A blank template to get started with Payload 3.0",
   "license": "MIT",
@@ -35,6 +36,7 @@
     "react": "19.2.1",
     "react-dom": "19.2.1",
     "sharp": "0.34.2",
+    "sonner": "^2.0.7",
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {

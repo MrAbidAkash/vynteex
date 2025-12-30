@@ -4,7 +4,8 @@ import './globals.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { Playfair_Display } from 'next/font/google'
-import { GoogleTagManager } from '@next/third-parties/google'
+import { Toaster } from 'sonner'
+// import { GoogleTagManager } from '@next/third-parties/google'
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -20,9 +21,10 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={playfair.variable}>
-      <GoogleTagManager gtmId="GTM-KXTSKLLN" gtmScriptUrl='' />
+      {/* <GoogleTagManager gtmId="GTM-KXTSKLLN" gtmScriptUrl='' /> */}
 
       <body className="overflow-x-hidden">
+        <Toaster />
         <Header />
         <main className="overflow-x-hidden">{children}</main>
         <Footer />

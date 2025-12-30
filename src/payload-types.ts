@@ -195,8 +195,6 @@ export interface ProductLanding {
     title: string;
     subtitle?: string | null;
     mainImage: (string | Media)[];
-    ctaText?: string | null;
-    ctaLink?: string | null;
   };
   specialPricing?:
     | {
@@ -433,8 +431,6 @@ export interface ProductLandingSelect<T extends boolean = true> {
         title?: T;
         subtitle?: T;
         mainImage?: T;
-        ctaText?: T;
-        ctaLink?: T;
       };
   specialPricing?:
     | T

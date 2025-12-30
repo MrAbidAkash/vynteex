@@ -350,7 +350,7 @@ export default function ProductCheckout({ page }: { page: any }) {
                 onClick={() => setPayment('partial')}
                 className={`flex-1 py-2 ${payment === 'partial' ? 'bg-blue-600 text-white' : ''}`}
               >
-                Advance Parcel Charge
+                Advance Parcel Payment
               </button>
               <button
                 onClick={() => setPayment('full')}

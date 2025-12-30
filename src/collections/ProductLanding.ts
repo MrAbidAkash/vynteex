@@ -39,8 +39,8 @@ export const ProductLanding: CollectionConfig = {
           required: true,
           hasMany: true,
         },
-        { name: 'ctaText', type: 'text', defaultValue: 'Order Now' },
-        { name: 'ctaLink', type: 'text', defaultValue: '#order-form' },
+        // { name: 'ctaText', type: 'text', defaultValue: 'Order Now' },
+        // { name: 'ctaLink', type: 'text', defaultValue: '#order-form' },
       ],
     },
 

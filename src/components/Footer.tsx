@@ -32,6 +32,7 @@ export default function Footer() {
         {
           style: {
             width: 'max-content',
+            zIndex: '100 !important',
           },
         },
       )

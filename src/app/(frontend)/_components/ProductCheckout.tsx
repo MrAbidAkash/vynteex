@@ -356,7 +356,7 @@ export default function ProductCheckout({ page }: { page: any }) {
                 onClick={() => setPayment('full')}
                 className={`flex-1 py-2 ${payment === 'full' ? 'bg-blue-600 text-white' : ''}`}
               >
-                Full Parcel Payment
+                Full Payment
               </button>
             </div>
           </div>

@@ -58,7 +58,7 @@ const LandingPage = ({ page }: { page: any }) => {
           target="_blank"
           aria-label="Chat on WhatsApp"
           className="
-    fixed bottom-6 left-6
+    fixed bottom-20 left-6
     w-[60px] h-[60px]
     bg-[#25D366]
     rounded-full
@@ -67,7 +67,7 @@ const LandingPage = ({ page }: { page: any }) => {
     cursor-pointer
     transition-transform
     hover:scale-110
-    z-9999
+    z-9999!
   "
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">

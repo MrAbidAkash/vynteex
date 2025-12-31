@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           data: [payload], // The 'test_event_code' is NOT inside here.
-          test_event_code: 'TEST34296', // It should be here, at the root level.
+          test_event_code: process.env.TEST_EVENT, // It should be here, at the root level.
         }),
       },
     )

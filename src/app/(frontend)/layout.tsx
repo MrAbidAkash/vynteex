@@ -5,6 +5,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { Playfair_Display } from 'next/font/google'
 import { Toaster } from 'sonner'
+import FacebookPixel from '@/components/FacebookPixel'
 // import { GoogleTagManager } from '@next/third-parties/google'
 
 const playfair = Playfair_Display({
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       {/* <GoogleTagManager gtmId="GTM-KXTSKLLN" gtmScriptUrl='' /> */}
 
       <body className="overflow-x-hidden">
+        <FacebookPixel />
         <Toaster />
         <Header />
         <main className="overflow-x-hidden">{children}</main>

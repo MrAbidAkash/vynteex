@@ -57,11 +57,26 @@ export default function ProductCheckout({ page }: { page: any }) {
 
   // Example: ViewContent event (call on product page mount)
   const sendViewContentEvent = async () => {
+    const eventId = `view_${variant.id}_${Date.now()}`
+
+    // 1. Send Browser Pixel Event
+    if (typeof window !== 'undefined' && window.fbq) {
+      window.fbq('track', 'ViewContent', {
+        content_ids: [variant.id],
+        content_name: variant.label,
+        content_type: 'product',
+        currency: 'BDT',
+        value: variant.price,
+        // CRITICAL for deduplication
+        eventID: eventId,
+      })
+    }
+
+    // 2. Your existing server-side CAPI call (keep this)
     const eventData = {
       event_name: 'ViewContent',
-      event_id: `view_${variant.id}_${Date.now()}`,
+      event_id: eventId, // Same ID as above
       customer_info: {
-        // Collect/capture customer info if available
         name: customerInfo.name,
         phone: customerInfo.phone,
         address: customerInfo.address,
@@ -75,7 +90,6 @@ export default function ProductCheckout({ page }: { page: any }) {
         value: variant.price,
       },
     }
-
     await fetch('/fb-conversion', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -89,12 +103,25 @@ export default function ProductCheckout({ page }: { page: any }) {
   // Facebook Conversions API Event Function
   // Updated sendInitialCheckOutEvent function in ProductCheckout component
   const sendInitialCheckOutEvent = async () => {
-    const orderId = `initial_checkout_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    const checkoutId = `initial_checkout_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+
+    // 1. Send Browser Pixel Event
+    if (typeof window !== 'undefined' && window.fbq) {
+      window.fbq('track', 'InitiateCheckout', {
+        // Note: Event name is one word
+        content_ids: [variant.id || variant.pricingId],
+        content_type: 'product',
+        currency: 'BDT',
+        value: total,
+        num_items: 1, // Consider adding the actual item count
+        eventID: checkoutId, // Same ID as server event
+      })
+    }
 
     // Send data in the correct structure for your backend to process
     const eventData = {
       event_name: 'Initiate Checkout', // Use snake_case
-      event_id: orderId,
+      event_id: checkoutId,
       // Pass required web parameters. Your backend will hash 'phone'.
       customer_info: {
         name: customerInfo.name,

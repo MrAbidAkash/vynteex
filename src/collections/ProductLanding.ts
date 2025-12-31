@@ -6,6 +6,17 @@ export const ProductLanding: CollectionConfig = {
   slug: 'product-landing',
   access: {
     read: () => true, // ✅ UNCOMMENT THIS for public access
+    // ❌ Prevent creating more than one
+    create: async ({ req }) => {
+      const existing = await req.payload.find({
+        collection: 'product-landing',
+        limit: 1,
+      })
+
+      return existing.totalDocs === 0
+    },
+    update: () => true,
+    delete: () => false,
   },
   admin: {
     useAsTitle: 'productName',

@@ -43,9 +43,30 @@ export default function PaymentSuccess() {
   const sendPurchaseEvent = async () => {
     const orderId = `purchase_bkash_${paymentID}_${trxID}`
 
+    // Determine the final event name based on your logic
+
+    const purchaseType = booked ? 'partial' : purchased ? 'full' : 'standard' // Your logic
+
+    // 1. BROWSER PIXEL EVENT - Use standard name 'Purchase'
+    if (typeof window !== 'undefined' && window.fbq) {
+      window.fbq('track', 'Purchase', {
+        // <-- Standard event name
+        value: paymentData?.amount,
+        currency: 'BDT',
+        content_ids: [paymentData.id || paymentData.pricingId],
+        content_type: 'product',
+        // Custom parameter to specify the type
+        purchase_type: purchaseType, // <-- Your custom detail here
+        // CRITICAL for deduplication
+        eventID: orderId,
+      })
+    }
+
+    const serverEventName = booked ? 'Partial Purchase' : purchased ? 'Full Purchase' : 'Purchase' // Your custom logic for server
+
     // Send data in the correct structure for your backend to process
     const eventData = {
-      event_name: booked ? 'Partial Purchase' : purchased ? 'Full Purchase' : 'Purchase', // Use snake_case
+      event_name: serverEventName, // Use snake_case
       event_id: orderId,
       // Pass required web parameters. Your backend will hash 'phone'.
       customer_info: {

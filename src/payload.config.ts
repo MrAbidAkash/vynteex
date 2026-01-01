@@ -32,6 +32,10 @@ export default buildConfig({
   },
   db: mongooseAdapter({
     url: process.env.DATABASE_URL || '',
+    connectOptions: {
+      maxPoolSize: 5,
+      minPoolSize: 0,
+    },
   }),
   sharp,
   endpoints: [createPayment, bkashCallback],

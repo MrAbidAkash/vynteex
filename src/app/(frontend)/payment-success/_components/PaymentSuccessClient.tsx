@@ -62,11 +62,11 @@ export default function PaymentSuccess() {
       })
     }
 
-    const serverEventName = booked ? 'Partial Purchase' : purchased ? 'Full Purchase' : 'Purchase' // Your custom logic for server
+    // const serverEventName = booked ? 'Partial Purchase' : purchased ? 'Full Purchase' : 'Purchase' // Your custom logic for server
 
     // Send data in the correct structure for your backend to process
     const eventData = {
-      event_name: serverEventName, // Use snake_case
+      event_name: 'Purchase', // Use snake_case
       event_id: orderId,
       // Pass required web parameters. Your backend will hash 'phone'.
       customer_info: {
@@ -79,6 +79,7 @@ export default function PaymentSuccess() {
       // due:,
       // Facebook will read standard fields like 'content_ids' from custom_data
       custom_data: {
+        purchase_type: purchaseType,
         content_ids: [paymentData.id || paymentData.pricingId],
         content_type: 'product',
         // You can keep other fields; they may be ignored but won't break the call.

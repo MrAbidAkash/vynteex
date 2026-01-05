@@ -19,7 +19,7 @@ export default function ProductCheckout({ page }: { page: any }) {
   const data = page?.pricing
   const [variant, setVariant] = useState(data[0])
   console.log('variant', variant)
-  const [payment, setPayment] = useState<'partial' | 'full'>('partial')
+  const [payment, setPayment] = useState<'partial' | 'full' | 'pickup'>('partial')
   const [deliveryCharge, setDeliveryCharge] = useState(50)
   const [loading, setLoading] = useState(false)
   const [customerInfo, setCustomerInfo] = useState({
@@ -46,7 +46,12 @@ export default function ProductCheckout({ page }: { page: any }) {
   }, [])
 
   const DELIVERY_CHARGE = deliveryCharge
-  const total = payment === 'full' ? variant.price + DELIVERY_CHARGE : DELIVERY_CHARGE
+  const total =
+    payment === 'full'
+      ? variant.price + DELIVERY_CHARGE
+      : payment === 'partial'
+        ? DELIVERY_CHARGE
+        : 0
 
   // Function to hash sensitive data (required by Facebook CAPI)
   const hashData = (data: string): string => {
@@ -177,9 +182,6 @@ export default function ProductCheckout({ page }: { page: any }) {
   const handlePurchase = async () => {
     setLoading(true)
 
-    // Send Google Tag Manager event
-    sendGTMEvent({ event: 'buttonClicked', value: 'xyz' })
-
     try {
       const newErrors = {
         name: validateField('name', customerInfo.name),
@@ -197,6 +199,10 @@ export default function ProductCheckout({ page }: { page: any }) {
 
       // Send Facebook Purchase Event
       await sendInitialCheckOutEvent()
+
+      if (total === 0 || total === '0') {
+        return (window.location.href = `${process.env.NEXT_PUBLIC_FRONTEND_URL}/booking-success`)
+      }
 
       // Original bKash payment logic
       const response = await fetch(`/api/bkash/create`, {
@@ -351,11 +357,11 @@ export default function ProductCheckout({ page }: { page: any }) {
               <span>Subtotal</span>
               <span>৳{variant.price}</span>
             </div>
-            <div className="flex justify-between font-sembold">
+            <div className="flex justify-between font-semibold">
               <span>Steadfast Parcel Payment</span>
               <span>৳{DELIVERY_CHARGE}</span>
             </div>
-            <div className="flex justify-between font-semibold">
+            <div className="flex justify-between font-bold text-lg">
               <span>Total</span>
               <span>৳{total}</span>
             </div>
@@ -372,19 +378,39 @@ export default function ProductCheckout({ page }: { page: any }) {
           {/* Payment Method */}
           <div>
             <p className="font-medium mb-2">Payment Method</p>
-            <div className="flex border rounded overflow-hidden">
-              <button
-                onClick={() => setPayment('partial')}
-                className={`flex-1 py-2 ${payment === 'partial' ? 'bg-blue-600 text-white' : ''}`}
-              >
+            <div className="border rounded p-3 space-y-2">
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="payment"
+                  value="pickup"
+                  checked={payment === 'pickup'}
+                  onChange={() => setPayment('pickup')}
+                />
+                Cash on Parcel
+              </label>
+
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="payment"
+                  value="partial"
+                  checked={payment === 'partial'}
+                  onChange={() => setPayment('partial')}
+                />
                 Advance Parcel Payment
-              </button>
-              <button
-                onClick={() => setPayment('full')}
-                className={`flex-1 py-2 ${payment === 'full' ? 'bg-blue-600 text-white' : ''}`}
-              >
+              </label>
+
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="payment"
+                  value="full"
+                  checked={payment === 'full'}
+                  onChange={() => setPayment('full')}
+                />
                 Full Payment
-              </button>
+              </label>
             </div>
           </div>
 

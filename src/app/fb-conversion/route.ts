@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
   try {
     const requestData = await request.json() // Now receives corrected structure
 
-    console.log('🟡 [1] Data received FROM FRONTEND:', JSON.stringify(requestData, null, 2))
+    // console.log('🟡 [1] Data received FROM FRONTEND:', JSON.stringify(requestData, null, 2))
 
     const pixelId = process.env.FACEBOOK_PIXEL_ID
     const accessToken = process.env.FACEBOOK_ACCESS_TOKEN

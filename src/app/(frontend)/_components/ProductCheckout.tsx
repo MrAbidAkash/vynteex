@@ -18,7 +18,7 @@ import { useEffect, useState } from 'react'
 export default function ProductCheckout({ page }: { page: any }) {
   const data = page?.pricing
   const [variant, setVariant] = useState(data[0])
-  console.log('variant', variant)
+  // console.log('variant', variant)
   const [payment, setPayment] = useState<'partial' | 'full' | 'pickup'>('partial')
   const [deliveryCharge, setDeliveryCharge] = useState(50)
   const [loading, setLoading] = useState(false)
@@ -52,6 +52,8 @@ export default function ProductCheckout({ page }: { page: any }) {
       : payment === 'partial'
         ? DELIVERY_CHARGE
         : 0
+  
+  const fullPrice = variant.price + DELIVERY_CHARGE
 
   // Function to hash sensitive data (required by Facebook CAPI)
   const hashData = (data: string): string => {
@@ -201,7 +203,31 @@ export default function ProductCheckout({ page }: { page: any }) {
       await sendInitialCheckOutEvent()
 
       if (total === 0 || total === '0') {
-        return (window.location.href = `${process.env.NEXT_PUBLIC_FRONTEND_URL}/booking-success`)
+        // Original bKash payment logic
+        const response = await fetch(`/createBooking`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            // Authorization: token,
+          },
+          body: JSON.stringify({
+            amount: fullPrice,
+            // callbackURL: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/bkash/callback`,
+            payerReference: 'booking',
+            pricingId: variant.pricingId,
+            size: variant.size || variant.sizes?.[0].size,
+            customerInfo,
+          }),
+        })
+
+        const data = await response.json()
+
+        console.log('data', data)
+
+        if (!data?.alreadyCreated) {
+          return (window.location.href = `${process.env.NEXT_PUBLIC_FRONTEND_URL}/booking-success?bookingId=${data?.booking?.bookingId}`)
+        }
+        return null
       }
 
       // Original bKash payment logic

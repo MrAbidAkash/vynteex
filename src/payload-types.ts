@@ -72,6 +72,7 @@ export interface Config {
     'product-landing': ProductLanding;
     'bkash-tokens': BkashToken;
     'bkash-payments': BkashPayment;
+    booking: Booking;
     'delivery-charge': DeliveryCharge;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -85,6 +86,7 @@ export interface Config {
     'product-landing': ProductLandingSelect<false> | ProductLandingSelect<true>;
     'bkash-tokens': BkashTokensSelect<false> | BkashTokensSelect<true>;
     'bkash-payments': BkashPaymentsSelect<false> | BkashPaymentsSelect<true>;
+    booking: BookingSelect<false> | BookingSelect<true>;
     'delivery-charge': DeliveryChargeSelect<false> | DeliveryChargeSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -273,6 +275,37 @@ export interface BkashPayment {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "booking".
+ */
+export interface Booking {
+  id: string;
+  bookingId: string;
+  product: string | ProductLanding;
+  /**
+   * pricing.pricingId from ProductLanding
+   */
+  pricingId: string;
+  size?: string | null;
+  amount?: number | null;
+  currency?: string | null;
+  merchantInvoiceNo?: string | null;
+  payerReference?: string | null;
+  paymentStatus?: ('Pending' | 'Completed' | 'Failed') | null;
+  user?: string | null;
+  customerInfo?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "delivery-charge".
  */
 export interface DeliveryCharge {
@@ -324,6 +357,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'bkash-payments';
         value: string | BkashPayment;
+      } | null)
+    | ({
+        relationTo: 'booking';
+        value: string | Booking;
       } | null)
     | ({
         relationTo: 'delivery-charge';
@@ -488,6 +525,25 @@ export interface BkashPaymentsSelect<T extends boolean = true> {
   payerReference?: T;
   trxID?: T;
   transactionStatus?: T;
+  user?: T;
+  customerInfo?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "booking_select".
+ */
+export interface BookingSelect<T extends boolean = true> {
+  bookingId?: T;
+  product?: T;
+  pricingId?: T;
+  size?: T;
+  amount?: T;
+  currency?: T;
+  merchantInvoiceNo?: T;
+  payerReference?: T;
+  paymentStatus?: T;
   user?: T;
   customerInfo?: T;
   updatedAt?: T;

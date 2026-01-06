@@ -13,6 +13,7 @@ import BkashTokens from './collections/BkashTokens'
 import BkashPayments from './collections/BkashPayments'
 import { bkashCallback, createPayment } from './endpoints/bkash'
 import DeliveryCharge from './collections/DeliveryCharge'
+import Booking from './collections/Booking'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -24,7 +25,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media, ProductLanding, BkashTokens, BkashPayments, DeliveryCharge],
+  collections: [Users, Media, ProductLanding, BkashTokens, BkashPayments, Booking,DeliveryCharge],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

@@ -3,7 +3,7 @@
 export default function PricingCards({ page }: { page: any }) {
   const specialPricing = page?.specialPricing
 
-  console.log(specialPricing)
+  // console.log(specialPricing)
   return (
     <section className="grid grid-cols-3 max-sm:grid-cols-1 justify-center gap-4 max-sm:gap-5 px-6 w-full mb-20">
       {specialPricing.map((item: any) => (

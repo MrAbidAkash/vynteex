@@ -10,49 +10,51 @@ import { useEffect, useRef, useState } from 'react'
 export default function BookingSuccess() {
   const searchParams = useSearchParams()
 
-  const paymentID = searchParams.get('paymentID')
+  const bookingID = searchParams.get('bookingId')
 
-  const [paymentData, setPaymentData] = useState<any>(null)
+  console.log('bookingID', bookingID)
 
-  const status = paymentData?.transactionStatus
-  const trxID = paymentData?.trxID
+  const [bookingData, setBookingData] = useState<any>(null)
+
+  console.log('bookingData', bookingData)
+
+  const status = bookingData?.paymentStatus
+  // const trxID = bookingData?.trxID
 
   useEffect(() => {
+    if (!bookingID) return
     ;(async () => {
       try {
-        const payment = await fetch(`/getPaymentInfo?paymentID=${paymentID}`)
-        const paymentData = await payment.json()
+        const booking = await fetch(`/getBookingInfo?bookingID=${bookingID}`)
+        const bookingData = await booking.json()
 
-        setPaymentData(paymentData)
+        setBookingData(bookingData)
       } catch (error) {
         console.log(error)
       }
     })()
-  }, [paymentID])
+  }, [bookingID])
 
-  console.log('payment', paymentData)
+  console.log('booking', bookingData)
 
-  const booked =
-    paymentData?.transactionStatus === 'Completed' && paymentData?.payerReference === 'partial'
-  const purchased =
-    paymentData?.transactionStatus === 'Completed' && paymentData?.payerReference === 'full'
+  const booked = true
 
   const hasSentPurchaseEvent = useRef(false)
 
   const sendPurchaseEvent = async () => {
-    const orderId = `purchase_bkash_${paymentID}_${trxID}`
+    const orderId = `booking_${bookingID}`
 
     // Determine the final event name based on your logic
 
-    const purchaseType = booked ? 'partial' : purchased ? 'full' : 'standard' // Your logic
+    const purchaseType = booked ? 'booked' : 'standard'
 
     // 1. BROWSER PIXEL EVENT - Use standard name 'Purchase'
     if (typeof window !== 'undefined' && window.fbq) {
       window.fbq('track', 'Purchase', {
         // <-- Standard event name
-        value: paymentData?.amount,
+        value: bookingData?.amount,
         currency: 'BDT',
-        content_ids: [paymentData.id || paymentData.pricingId],
+        content_ids: [bookingData.id || bookingData.pricingId],
         content_type: 'product',
         // Custom parameter to specify the type
         purchase_type: purchaseType, // <-- Your custom detail here
@@ -69,22 +71,22 @@ export default function BookingSuccess() {
       event_id: orderId,
       // Pass required web parameters. Your backend will hash 'phone'.
       customer_info: {
-        name: paymentData?.customerInfo.name,
-        phone: paymentData?.customerInfo.phone,
-        address: paymentData?.customerInfo.address,
+        name: bookingData?.customerInfo.name,
+        phone: bookingData?.customerInfo.phone,
+        address: bookingData?.customerInfo.address,
       },
       currency: 'BDT',
-      value: paymentData?.amount,
+      value: bookingData?.amount,
       // due:,
       // Facebook will read standard fields like 'content_ids' from custom_data
       custom_data: {
         purchase_type: purchaseType,
-        content_ids: [paymentData.id || paymentData.pricingId],
+        content_ids: [bookingData.id || bookingData.pricingId],
         content_type: 'product',
         // You can keep other fields; they may be ignored but won't break the call.
-        product_name: paymentData?.productInfo.label,
-        size: paymentData.size,
-        productPrice: paymentData?.productInfo.price,
+        product_name: bookingData?.productInfo.label,
+        size: bookingData.size,
+        productPrice: bookingData?.productInfo.price,
         // delivery_charge: DELIVERY_CHARGE,
       },
     }
@@ -106,23 +108,16 @@ export default function BookingSuccess() {
   }
 
   useEffect(() => {
-    if (!paymentID) return
-    if (!paymentData) return
-    if (paymentData.transactionStatus !== 'Completed') return
-    if (!paymentData.trxID) return
+    if (!bookingID) return
+    if (!bookingData) return
 
-    if ((purchased || booked) && !hasSentPurchaseEvent.current) {
+    if (booked && !hasSentPurchaseEvent.current) {
       sendPurchaseEvent()
       hasSentPurchaseEvent.current = true
     }
-  }, [paymentID, paymentData, purchased, booked])
+  }, [bookingID, bookingData])
 
-  if (
-    !paymentID ||
-    !paymentData ||
-    paymentData?.error ||
-    paymentData?.transactionStatus !== 'Completed'
-  ) {
+  if (!bookingID || !bookingData || bookingData?.error) {
     return (
       <div className="min-h-[50vh] bg-gray-100 flex flex-col justify-center items-center px-3 py-6">
         <h2 className="text-2xl font-semibold">invalid page</h2>
@@ -137,13 +132,13 @@ export default function BookingSuccess() {
   }
 
   // Normally these should come from DB
-  const customer = paymentData?.customerInfo
+  const customer = bookingData?.customerInfo
 
   const product = {
-    name: paymentData?.productInfo?.label,
+    name: bookingData?.productInfo?.label,
     qty: 1,
-    paid: paymentData?.amount,
-    price: paymentData?.productInfo?.price,
+    paid: 0,
+    price: bookingData?.amount,
   }
 
   return (
@@ -154,12 +149,9 @@ export default function BookingSuccess() {
           <div className="flex justify-center mb-3">
             <CheckCircle size={56} className="text-green-400" />
           </div>
-          <h1 className="text-2xl font-semibold">
-            {booked ? 'Booking Completed' : purchased ? 'Purchase Completed' : 'Payment Failed'}
-          </h1>
+          <h1 className="text-2xl font-semibold">Booking Confirmed </h1>
           <p className="text-sm text-gray-300 mt-1">
-            Thank you for choosing us — your{' '}
-            {booked ? 'booking' : purchased ? 'purchase' : 'payment'} has been confirmed
+            Thank you for choosing us — your booking has been confirmed
           </p>
         </div>
 
@@ -187,7 +179,7 @@ export default function BookingSuccess() {
           {/* Summary */}
           <section>
             <h2 className="font-semibold text-lg border-l-4 border-yellow-400 pl-3 mb-3">
-              {booked ? 'Booking Summary' : purchased ? 'Purchase Summary' : 'Payment Summary'}
+              Booking Summary
             </h2>
 
             <div className="overflow-x-auto">
@@ -222,13 +214,14 @@ export default function BookingSuccess() {
           {/* Payment Info */}
           <section className="bg-green-50 rounded-lg p-4 text-sm">
             <p>
-              <span className="font-medium">
-                {booked ? 'Booking' : purchased ? 'Purchase' : 'Payment'} Status:
-              </span>{' '}
-              <span className="text-green-600 font-semibold capitalize">{status}</span>
+              <span className="font-medium">Payment Status:</span>{' '}
+              <span className="text-yellow-600 font-semibold capitalize">{status}</span>
             </p>
             <p className="mt-1 break-all">
-              <span className="font-medium">Transaction ID:</span> {trxID}
+              <span className="font-medium">Booking ID:</span> {bookingID}
+            </p>
+            <p className="mt-1 break-all">
+              <span className="font-medium">Invoice No:</span> {bookingData?.invoiceNo}
             </p>
           </section>
         </div>

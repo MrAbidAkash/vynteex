@@ -19,7 +19,7 @@ export default function ProductCheckout({ page }: { page: any }) {
   const data = page?.pricing
   const [variant, setVariant] = useState(data[0])
   // console.log('variant', variant)
-  const [payment, setPayment] = useState<'partial' | 'full' | 'pickup'>('partial')
+  const [payment, setPayment] = useState<'partial' | 'full' | 'pickup'>('pickup')
   const [deliveryCharge, setDeliveryCharge] = useState(50)
   const [loading, setLoading] = useState(false)
   const [customerInfo, setCustomerInfo] = useState({
@@ -52,7 +52,7 @@ export default function ProductCheckout({ page }: { page: any }) {
       : payment === 'partial'
         ? DELIVERY_CHARGE
         : 0
-  
+
   const fullPrice = variant.price + DELIVERY_CHARGE
 
   // Function to hash sensitive data (required by Facebook CAPI)
@@ -445,7 +445,13 @@ export default function ProductCheckout({ page }: { page: any }) {
             disabled={loading || !isFormValid}
             className={`w-full bg-black text-white py-3 rounded text-lg ${loading || !isFormValid ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            {loading ? 'Processing...' : `Place Purchase — ৳${total}`}
+            {total === 0 || total === '0'
+              ? loading
+                ? 'Processing...'
+                : `Place Purchase`
+              : loading
+                ? 'Processing...'
+                : `Place Purchase — ৳${total}`}
           </button>
         </aside>
       </div>
